@@ -1,27 +1,42 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'lucide-react';
 
 
 const NavbarWrapper = styled.div`
-  width:100%;
   position: fixed;
-  top: 0;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  width: auto;
   z-index: 1000;
-  background-color: rgba(17,17,17,0.9);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgb(135, 48, 212);
-  `;
+
+  background-color: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(135, 48, 212, 0.3);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 800px) {
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 0;
+    padding: 0.75rem 1rem;
+  }
+`;
+
 
 const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;;
-  height:4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  `;
+  gap: 1.5rem;
+
+  height: 3rem;
+`;
 
 const Logo = styled.div`
   display: flex;
@@ -56,6 +71,7 @@ const NavLinks = styled.div`
     text-decoration: none;
     font-weight: bold;
     transition: color 0.2s;
+    cursor: pointer;
 
     &:hover {
       color: #a855f7;
@@ -138,6 +154,19 @@ const MobileMenu = styled.div`
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize(); // check on initial render
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const navItems=[
     { name:"Codebase", link:"/" },
@@ -176,25 +205,30 @@ const Navbar = () => {
         </MenuToggle>
         </Container>
 
-        <MobileMenu isOpen={isMobileMenuOpen}>
-          <ArrowLeft
-            onClick={() => setIsMobileMenuOpen(false)}
-            style={{  position: 'fixed',
-               top: '1rem',
-               right: '1rem',
-               cursor: 'pointer',
-               color: '#ccc', }} />
-          {navItems.map((item) => (
-           <a
-             href={item.href}
-             key={item.name}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                 {item.name}
-               </a>
-                  ))}
-                <button>Profile</button>
-            </MobileMenu>
+        {isMobile && isMobileMenuOpen && (
+  <MobileMenu isOpen={isMobileMenuOpen}>
+    <ArrowLeft
+      onClick={() => setIsMobileMenuOpen(false)}
+      style={{
+        position: 'fixed',
+        top: '1rem',
+        right: '1rem',
+        cursor: 'pointer',
+        color: '#ccc',
+      }}
+    />
+    {navItems.map((item) => (
+      <a
+        href={item.href}
+        key={item.name}
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        {item.name}
+      </a>
+    ))}
+    <button>Profile</button>
+  </MobileMenu>
+)}
 
         </NavbarWrapper>
         );
