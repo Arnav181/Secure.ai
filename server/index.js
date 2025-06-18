@@ -10,6 +10,8 @@ connectDatabase(MONGO_CONNECTION_STRING).then(() => {
   console.log("MongoDB Connected");
 });
 
+app.post("/user", userRoutes);
+
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
 });
