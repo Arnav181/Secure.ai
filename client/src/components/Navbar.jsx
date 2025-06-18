@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import {useState,useEffect} from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'lucide-react';
 
@@ -15,8 +15,8 @@ const NavbarWrapper = styled.div`
   backdrop-filter: blur(12px);
   border: 1px solid rgba(135, 48, 212, 0.3);
   border-radius: 0.5rem;
-  padding: 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 0.75rem;
+  box-shadow: 0 4px 20px rgba(135, 48, 212, 0.3);
 
   @media (max-width: 800px) {
     top: 0;
@@ -25,6 +25,8 @@ const NavbarWrapper = styled.div`
     width: 100%;
     border-radius: 0;
     padding: 0.75rem 1rem;
+    border: 0;
+    box-shadow: 0 4px 20px rgba(135, 48, 212, 0.3);
   }
 `;
 
