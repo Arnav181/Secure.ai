@@ -1,132 +1,205 @@
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import Button from "./Button";
+import React,{useState} from "react";
+import styled from 'styled-components';
+import { ArrowLeft } from 'lucide-react';
 
-const navigation = [
-  { name: "Codebase", href: "#", current: true },
-  { name: "Info", href: "#", current: false },
-  { name: "Laws", href: "#", current: false },
-  { name: "Updates and News", href: "#", current: false },
-];
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+const NavbarWrapper = styled.div`
+  width:100%;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(17,17,17,0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgb(135, 48, 212);
+  `;
 
-export default function Example() {
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;;
+  height:4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  `;
+
+const Logo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .icon{
+    width: 2rem;
+    height: 2rem;
+    background-color: rgb(135, 48, 212);
+    border-radius: 75%;
+  }
+
+  {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  `;
+
+const NavLinks = styled.div`
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  a {
+    color: #ccc;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #a855f7;
+    }
+  }
+`;
+
+const CTA = styled.div`
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+
+  button {
+    background: linear-gradient(to right, #6b21a8, #4c1d95);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 0 8px #6b21a8;
+    }
+  }
+`;
+
+const MenuToggle = styled.div`
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileMenu = styled.div`
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 75%;
+  max-width: 300px;
+  background-color: #222;
+  padding: 1.5rem 1rem;
+  border-radius: 0 0 0 1rem;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+
+  transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(100%)')};
+  transition: transform 0.3s ease-in-out;
+
+  a {
+    display: block;
+    color: #ccc;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      color: #a855f7;
+    }
+  }
+
+  button {
+    width: 100%;
+    background: linear-gradient(to right, #6b21a8, #4c1d95);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+`;
+
+const Navbar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navItems=[
+    { name:"Codebase", link:"/" },
+    { name:"Info", link:"/info" },
+    { name:"Laws", link:"/laws" },
+    { name:"Updates and News", link:"/updates" },
+    { name:"About", link:"/about" },
+    { name:"Contact", link:"/contact"}
+        
+  ]
+
+
   return (
-    <Disclosure as="nav" className="fixed top-0 w-full z-50 bg-gray-800">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div className="relative flex h-16 items-center justify-between">
-          <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
-              <span className="absolute -inset-0.5" />
-              <span className="sr-only">Open main menu</span>
-              <Bars3Icon
-                aria-hidden="true"
-                className="block size-6 group-data-open:hidden"
-              />
-              <XMarkIcon
-                aria-hidden="true"
-                className="hidden size-6 group-data-open:block"
-              />
-            </DisclosureButton>
-          </div>
-          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex shrink-0 items-center">
-              <img
-                alt="Your Company"
-                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                className="h-8 w-auto"
-              />
-            </div>
-            <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    aria-current={item.current ? "page" : undefined}
-                    className={classNames(
-                      item.current
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                      "rounded-md px-3 py-2 text-sm font-medium"
-                    )}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <Menu as="div" className="relative ml-3">
-              <div>
-                <Button />
-              </div>
-              <MenuItems
-                transition
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-              >
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-                  >
-                    Your Profile
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-                  >
-                    Settings
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-                  >
-                    Sign out
-                  </a>
-                </MenuItem>
-              </MenuItems>
-            </Menu>
-          </div>
-        </div>
-      </div>
+    <NavbarWrapper>
+      <Container>
+        <Logo>
+          <div className="icon"></div>
+          <span>Secure.ai</span>
+        </Logo>
 
-      <DisclosurePanel className="sm:hidden">
-        <div className="space-y-1 px-2 pt-2 pb-3">
-          {navigation.map((item) => (
-            <DisclosureButton
-              key={item.name}
-              as="a"
-              href={item.href}
-              aria-current={item.current ? "page" : undefined}
-              className={classNames(
-                item.current
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                "block rounded-md px-3 py-2 text-base font-medium"
-              )}
-            >
+        <NavLinks>
+          {navItems.map((item) => (
+            <a key = {item.name} href={item.href}>
               {item.name}
-            </DisclosureButton>
+            </a>
           ))}
-        </div>
-      </DisclosurePanel>
-    </Disclosure>
-  );
-}
+        </NavLinks>
+
+        
+        <CTA>
+          <button>Profile</button>
+        </CTA>  
+
+        <MenuToggle onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? '✕' : '☰'}
+        </MenuToggle>
+        </Container>
+
+        <MobileMenu isOpen={isMobileMenuOpen}>
+          <ArrowLeft
+            onClick={() => setIsMobileMenuOpen(false)}
+            style={{  position: 'fixed',
+               top: '1rem',
+               right: '1rem',
+               cursor: 'pointer',
+               color: '#ccc', }} />
+          {navItems.map((item) => (
+           <a
+             href={item.href}
+             key={item.name}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                 {item.name}
+               </a>
+                  ))}
+                <button>Profile</button>
+            </MobileMenu>
+
+        </NavbarWrapper>
+        );
+};
+    
+      
+
+      export default Navbar;
