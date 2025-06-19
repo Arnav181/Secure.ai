@@ -1,7 +1,6 @@
-import {useState,useEffect} from "react";
-import styled from 'styled-components';
-import { ArrowLeft } from 'lucide-react';
-
+import { useState, useEffect } from "react";
+import styled from "styled-components";
+import { ArrowLeft } from "lucide-react";
 
 const NavbarWrapper = styled.div`
   position: fixed;
@@ -30,7 +29,6 @@ const NavbarWrapper = styled.div`
   }
 `;
 
-
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -42,23 +40,23 @@ const Container = styled.div`
 
 const Logo = styled.div`
   display: flex;
+  cursor: pointer;
   align-items: center;
   gap: 0.75rem;
 
-  .icon{
+  .icon {
     width: 2rem;
     height: 2rem;
     background-color: rgb(135, 48, 212);
     border-radius: 75%;
   }
 
-  {
+   {
     font-size: 1.25rem;
     font-weight: bold;
     color: white;
   }
-
-  `;
+`;
 
 const NavLinks = styled.div`
   display: none;
@@ -127,7 +125,7 @@ const MobileMenu = styled.div`
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
   z-index: 1000;
 
-  transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(100%)')};
+  transform: ${({ isOpen }) => (isOpen ? "translateX(0)" : "translateX(100%)")};
   transition: transform 0.3s ease-in-out;
 
   a {
@@ -158,28 +156,25 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
 
     handleResize(); // check on initial render
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const navItems=[
-    { name:"Codebase", link:"/" },
-    { name:"Info", link:"/info" },
-    { name:"Laws", link:"/laws" },
-    { name:"Updates and News", link:"/updates" },
-    { name:"About", link:"/about" },
-    { name:"Contact", link:"/contact"}
-        
-  ]
-
+  const navItems = [
+    { name: "Codebase", link: "/" },
+    { name: "Info", link: "/info" },
+    { name: "Laws", link: "/laws" },
+    { name: "Updates and News", link: "/updates" },
+    { name: "About", link: "/about" },
+    { name: "Contact", link: "/contact" },
+  ];
 
   return (
     <NavbarWrapper>
@@ -191,51 +186,47 @@ const Navbar = () => {
 
         <NavLinks>
           {navItems.map((item) => (
-            <a key = {item.name} href={item.href}>
+            <a key={item.name} href={item.href}>
               {item.name}
             </a>
           ))}
         </NavLinks>
 
-        
         <CTA>
           <button>Profile</button>
-        </CTA>  
+        </CTA>
 
         <MenuToggle onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? '✕' : '☰'}
+          {isMobileMenuOpen ? "✕" : "☰"}
         </MenuToggle>
-        </Container>
+      </Container>
 
-        {isMobile && isMobileMenuOpen && (
-  <MobileMenu isOpen={isMobileMenuOpen}>
-    <ArrowLeft
-      onClick={() => setIsMobileMenuOpen(false)}
-      style={{
-        position: 'fixed',
-        top: '1rem',
-        right: '1rem',
-        cursor: 'pointer',
-        color: '#ccc',
-      }}
-    />
-    {navItems.map((item) => (
-      <a
-        href={item.href}
-        key={item.name}
-        onClick={() => setIsMobileMenuOpen(false)}
-      >
-        {item.name}
-      </a>
-    ))}
-    <button>Profile</button>
-  </MobileMenu>
-)}
-
-        </NavbarWrapper>
-        );
+      {isMobile && isMobileMenuOpen && (
+        <MobileMenu isOpen={isMobileMenuOpen}>
+          <ArrowLeft
+            onClick={() => setIsMobileMenuOpen(false)}
+            style={{
+              position: "fixed",
+              top: "1rem",
+              right: "1rem",
+              cursor: "pointer",
+              color: "#ccc",
+            }}
+          />
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              key={item.name}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {item.name}
+            </a>
+          ))}
+          <button>Profile</button>
+        </MobileMenu>
+      )}
+    </NavbarWrapper>
+  );
 };
-    
-      
 
-      export default Navbar;
+export default Navbar;
