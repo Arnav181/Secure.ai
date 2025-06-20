@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { ArrowLeft } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const NavbarWrapper = styled.div`
   position: fixed;
@@ -124,7 +124,6 @@ const MobileMenu = styled.div`
   border-radius: 0 0 0 1rem;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
   z-index: 1000;
-
   transform: ${({ isOpen }) => (isOpen ? "translateX(0)" : "translateX(100%)")};
   transition: transform 0.3s ease-in-out;
 
@@ -201,9 +200,9 @@ const Navbar = () => {
         </MenuToggle>
       </Container>
 
-      {isMobile && isMobileMenuOpen && (
+      {isMobile &&  (
         <MobileMenu isOpen={isMobileMenuOpen}>
-          <ArrowLeft
+          <ArrowRight
             onClick={() => setIsMobileMenuOpen(false)}
             style={{
               position: "fixed",
