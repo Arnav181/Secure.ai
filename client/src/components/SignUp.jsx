@@ -1,4 +1,5 @@
-import React from "react";
+import { useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -45,14 +46,13 @@ const RightSection = styled.div`
   min-height: 100vh;
   z-index: 2;
 
- @media (max-width: 768px) {
-  position: relative;
-  background: transparent;
-  backdrop-filter: blur(6px);
-  padding: 1.5rem;
-  min-height: unset; /* <-- fix added */
-}
-
+  @media (max-width: 768px) {
+    position: relative;
+    background: transparent;
+    backdrop-filter: blur(6px);
+    padding: 1.5rem;
+    min-height: unset; /* <-- fix added */
+  }
 `;
 
 const Form = styled.form`
@@ -90,6 +90,7 @@ const Input = styled.input`
   padding: 0.75rem;
   font-size: 1rem;
   border: 1px solid #cbd5e0;
+  color: rgb(0, 0, 0);
   border-radius: 0.5rem;
   outline: none;
   transition: all 0.2s ease-in-out;
@@ -117,6 +118,31 @@ const Button = styled.button`
 `;
 
 export default function SignupModule() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    try {
+      axios
+        .post("http://localhost:8080/user/signup", {
+          username: name,
+          email,
+          password,
+        })
+        .then((response) => {
+          if (response.status === 201) {
+            console.log("Form Submitted Successfully");
+          } else {
+            console.log("Signup failed");
+          }
+        });
+    } catch (err) {
+      console.log(`Error in sign up : ${err}`);
+    }
+  };
+
   return (
     <Container>
       <LeftSection>
@@ -127,22 +153,40 @@ export default function SignupModule() {
       </LeftSection>
 
       <RightSection>
-        <Form>
+        <Form onSubmit={handleOnSubmit}>
           <Title>Sign Up</Title>
 
           <div>
             <Label>Name</Label>
-            <Input type="text" placeholder="Your name" />
+            <Input
+              type="text"
+              placeholder="Your Name"
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+            />
           </div>
 
           <div>
             <Label>Email</Label>
-            <Input type="email" placeholder="you@example.com" />
+            <Input
+              type="email"
+              placeholder="you@example.com"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
           </div>
 
           <div>
             <Label>Password</Label>
-            <Input type="password" placeholder="••••••••" />
+            <Input
+              type="password"
+              placeholder="••••••••"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
           </div>
 
           <Button type="submit">Create Account</Button>
