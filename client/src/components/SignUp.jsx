@@ -147,7 +147,7 @@ export default function SignupModule() {
     <Container>
       <LeftSection>
         <img
-          src="https://images.unsplash.com/photo-1743397015934-3aa9c6199baf?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          src="https://images.unsplash.com/photo-1614064548016-0b5c13ca2c85?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Signup Visual"
         />
       </LeftSection>
