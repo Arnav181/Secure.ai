@@ -7,10 +7,11 @@ function App() {
   return (
     <Router>
       <div>
-        <Navbar />
+        <div></div>
         <div>
           {" "}
           <Routes>
+            <Route path="/" element={((<Navbar />), (<SignupModule />))} />
             <Route path="/signup" element={<SignupModule />} />
           </Routes>
         </div>
