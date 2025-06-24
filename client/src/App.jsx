@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import SignupModule from "./components/SignUp.jsx";
+import LoginModule from "./components/Login.jsx";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Routes>
             <Route path="/" element={((<Navbar />), (<SignupModule />))} />
             <Route path="/signup" element={<SignupModule />} />
+            <Route path="/login" element={<LoginModule />} />
           </Routes>
         </div>
       </div>
