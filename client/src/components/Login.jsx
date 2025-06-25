@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -136,8 +137,19 @@ export default function LoginModule() {
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    // Handle login logic here, e.g., form validation or state updates
-    console.log("Login submitted with:", { email, password });
+    try {
+      axios
+        .post("http://localhost:8080/user/login", { email, password })
+        .then((response) => {
+          if (response.status === 201) {
+            console.log("Login Successfull");
+          } else {
+            console.log("Login Failed");
+          }
+        });
+    } catch (err) {
+      console.log("Error In Login", err);
+    }
   };
 
   return (
