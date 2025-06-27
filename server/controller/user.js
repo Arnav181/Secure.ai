@@ -33,13 +33,18 @@ const createNewUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const existingUser = await user.findOne({ email, password });
+    const existingUser = await user.findOne({ email });
     if (!existingUser) {
       return res.status(401).json({ msg: "Invalid credentials" });
+    }
+    const isMatch = await bcrypt.compare(password, existingUser.password);
+    if (!isMatch) {
+      return res.status(401).json({ msg: "Incorrect email or password" });
     }
     return res.status(201).json({ msg: "Successfully logged in" });
   } catch (err) {
     console.log("Error in logging in user", err);
+    return res.status(500).json({ msg: "Internal server error" });
   }
 };
 
