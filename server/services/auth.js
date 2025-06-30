@@ -24,4 +24,5 @@ const getUser = (token) => {
 
 module.exports = {
   setUser,
+  getUser,
 };
