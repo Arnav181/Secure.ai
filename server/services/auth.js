@@ -13,6 +13,15 @@ const setUser = (user) => {
   );
 };
 
+const getUser = (token) => {
+  try {
+    const payload = jwt.verify(token, secretKey);
+    return payload;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   setUser,
 };
