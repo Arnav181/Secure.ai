@@ -1,3 +1,4 @@
+const { setUser } = require("../services/auth");
 const user = require("../model/user");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -41,6 +42,8 @@ const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ msg: "Incorrect email or password" });
     }
+    const token = setUser(existingUser);
+    res.cookie("token", token);
     return res.status(201).json({ msg: "Successfully logged in" });
   } catch (err) {
     console.log("Error in logging in user", err);
