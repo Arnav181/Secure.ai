@@ -139,7 +139,11 @@ export default function LoginModule() {
     e.preventDefault();
     try {
       axios
-        .post("http://localhost:8080/user/login", { email, password })
+        .post(
+          "http://localhost:8080/user/login",
+          { email, password },
+          { withCredentials: true }
+        )
         .then((response) => {
           if (response.status === 201) {
             console.log("Login Successfull");
