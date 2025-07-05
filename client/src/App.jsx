@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import SignupModule from "./pages/SignUp.jsx";
 import LoginModule from "./pages/Login.jsx";
+import LandingModule from "./pages/Landing.jsx";
 
 function App() {
   return (
@@ -11,9 +12,11 @@ function App() {
         <div>
           {" "}
           <Routes>
-            <Route path="/" element={((<Navbar />), (<SignupModule />))} />
+            <Route path="/" element= {<Navbar/>} />
             <Route path="/signup" element={<SignupModule />} />
             <Route path="/login" element={<LoginModule />} />
+            <Route path="/landing" element={<LandingModule/>} />
+            {/* Add more routes as needed */}
           </Routes>
         </div>
       </div>

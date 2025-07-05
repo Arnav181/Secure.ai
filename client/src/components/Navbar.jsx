@@ -10,12 +10,12 @@ const NavbarWrapper = styled.div`
   width: auto;
   z-index: 1000;
 
-  background-color: rgba(17, 17, 17, 0.6);
+  background-color: rgba(0, 8, 20, 0.6);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(135, 48, 212, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 0.5rem;
   padding: 0.75rem;
-  box-shadow: 0 4px 20px rgba(135, 48, 212, 0.3);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 
   @media (max-width: 800px) {
     top: 0;
@@ -25,7 +25,7 @@ const NavbarWrapper = styled.div`
     border-radius: 0;
     padding: 0.75rem 1rem;
     border: 0;
-    box-shadow: 0 4px 20px rgba(135, 48, 212, 0.3);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
   }
 `;
 
@@ -47,7 +47,7 @@ const Logo = styled.div`
   .icon {
     width: 2rem;
     height: 2rem;
-    background-color: rgb(135, 48, 212);
+    background-color: #3b82f6;
     border-radius: 75%;
   }
 
@@ -67,14 +67,14 @@ const NavLinks = styled.div`
   }
 
   a {
-    color: #ccc;
+    color: #cbd5e1;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.2s;
     cursor: pointer;
 
     &:hover {
-      color: #a855f7;
+      color: #3b82f6;
     }
   }
 `;
@@ -87,7 +87,7 @@ const CTA = styled.div`
   }
 
   button {
-    background: linear-gradient(to right, #6b21a8, #4c1d95);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
@@ -97,14 +97,14 @@ const CTA = styled.div`
     transition: box-shadow 0.2s;
 
     &:hover {
-      box-shadow: 0 0 8px #6b21a8;
+      box-shadow: 0 0 8px #2563eb;
     }
   }
 `;
 
 const MenuToggle = styled.div`
   font-size: 1.5rem;
-  color: #ccc;
+  color: #cbd5e1;
   cursor: pointer;
 
   @media (min-width: 768px) {
@@ -119,7 +119,7 @@ const MobileMenu = styled.div`
   height: 100vh;
   width: 75%;
   max-width: 300px;
-  background-color: #222;
+  background-color: #001d3d;
   padding: 1.5rem 1rem;
   border-radius: 0 0 0 1rem;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
@@ -129,19 +129,19 @@ const MobileMenu = styled.div`
 
   a {
     display: block;
-    color: #ccc;
+    color: #cbd5e1;
     margin-bottom: 1rem;
     text-decoration: none;
     font-weight: bold;
 
     &:hover {
-      color: #a855f7;
+      color: #3b82f6;
     }
   }
 
   button {
     width: 100%;
-    background: linear-gradient(to right, #6b21a8, #4c1d95);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: white;
     padding: 0.75rem;
     border-radius: 0.5rem;
