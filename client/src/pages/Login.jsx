@@ -1,188 +1,180 @@
 import { useState } from "react";
 import axios from "axios";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import { Link } from "react-router-dom";
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const slideInLeft = keyframes`
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+`;
+
+const slideInRight = keyframes`
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+`;
+
+const gradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
 
 const Container = styled.div`
- position: relative;
- min-height: 100vh;
- display: flex;
- flex-direction: row;
- background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
- @media (max-width: 768px) {
-   flex-direction: column;
- }
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000814, #001d3d);
+  background-size: 200% 200%;
+  animation: ${gradientAnimation} 15s ease infinite;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const LeftSection = styled.div`
- flex: 1;
- position: relative;
- background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(147, 197, 253, 0.3) 50%, rgba(219, 234, 254, 0.2) 100%);
- overflow: hidden;
- z-index: 1;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  animation: ${slideInLeft} 1s ease forwards;
 
- &::before {
-   content: '';
-   position: absolute;
-   top: 0;
-   left: 0;
-   right: 0;
-   bottom: 0;
-   background: linear-gradient(45deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.05) 100%);
-   z-index: 1;
- }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.9) contrast(1.05);
+    transition: transform 0.5s ease;
+  }
 
- img {
-   width: 100%;
-   height: 100%;
-   object-fit: cover;
-   filter: brightness(0.4) saturate(0.8) hue-rotate(200deg);
- }
+  &:hover img {
+    transform: scale(1.05) rotate(1deg);
+  }
 
- @media (max-width: 768px) {
-   display: none;
- }
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const RightSection = styled.div`
- flex: 1;
- background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(51, 65, 85, 0.7) 100%);
- display: flex;
- align-items: center;
- justify-content: center;
- padding: 2rem;
- min-height: 100vh;
- z-index: 2;
-
- @media (min-width: 768px) {
-   position: relative;
-   background: linear-gradient(135deg, rgba(30, 41, 59, 0.3) 0%, rgba(51, 65, 85, 0.2) 100%);
-   backdrop-filter: blur(12px);
-   padding: 1.5rem;
-   min-height: unset;
-   width: max-content;
- }
+  flex: 1;
+  background: linear-gradient(135deg, #000814, #001d3d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: ${slideInRight} 1s ease forwards;
 `;
 
 const Form = styled.form`
- width: 100%;
- max-width: 30rem;
- background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
- border: 1px solid rgba(147, 197, 253, 0.3);
- border-radius: 1.5rem;
- padding: 2.5rem;
- box-shadow: 
-   0 25px 50px rgba(0, 0, 0, 0.3),
-   0 0 0 1px rgba(147, 197, 253, 0.1),
-   inset 0 1px 0 rgba(255, 255, 255, 0.6);
- display: flex;
- flex-direction: column;
- gap: 1.25rem;
- backdrop-filter: blur(10px);
-
- @media (max-width: 768px) {
-   background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.85) 100%);
-   padding: 2rem;
- }
+  width: 100%;
+  max-width: 30rem;
+  background: #0a192f;
+  border: 1px solid #1e3a8a;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(3, 102, 214, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: ${fadeIn} 1.5s ease forwards;
 `;
 
 const Title = styled.h2`
- font-size: 2rem;
- font-weight: 700;
- text-align: center;
- background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
- -webkit-background-clip: text;
- -webkit-text-fill-color: transparent;
- background-clip: text;
- text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3b82f6;
+  text-align: center;
 `;
 
 const Label = styled.label`
- font-size: 0.95rem;
- background: linear-gradient(135deg, #475569 0%, #64748b 100%);
- -webkit-background-clip: text;
- -webkit-text-fill-color: transparent;
- background-clip: text;
- margin-bottom: 0.4rem;
- font-weight: 500;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
 `;
 
 const Input = styled.input`
- width: 100%;
- padding: 0.75rem;
- font-size: 1rem;
- border: 1px solid rgba(147, 197, 253, 0.4);
- background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.8) 100%);
- color: #1e293b;
- border-radius: 0.5rem;
- outline: none;
- transition: all 0.3s ease-in-out;
- box-shadow: 
-   0 2px 4px rgba(0, 0, 0, 0.05),
-   inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #3b82f6;
+  background: #1e293b;
+  color: #e0f2fe;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: all 0.3s ease;
 
- &:focus {
-   border-color: #3b82f6;
-   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
-   box-shadow: 
-     0 0 0 3px rgba(59, 130, 246, 0.2),
-     0 4px 12px rgba(59, 130, 246, 0.15),
-     inset 0 1px 2px rgba(0, 0, 0, 0.05);
-   transform: translateY(-1px);
- }
+  &:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
+    background: #273549;
+  }
 `;
 
 const Button = styled.button`
- padding: 0.75rem;
- font-size: 1rem;
- background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
- color: white;
- border: none;
- border-radius: 0.5rem;
- font-weight: 600;
- cursor: pointer;
- transition: all 0.3s ease;
- box-shadow: 
-   0 4px 12px rgba(59, 130, 246, 0.3),
-   inset 0 1px 0 rgba(255, 255, 255, 0.2);
- text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
 
- &:hover {
-   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
-   transform: translateY(-2px);
-   box-shadow: 
-     0 8px 20px rgba(59, 130, 246, 0.4),
-     inset 0 1px 0 rgba(255, 255, 255, 0.2);
- }
+  &:hover {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.6);
+  }
 
- &:active {
-   transform: translateY(0);
-   box-shadow: 
-     0 2px 8px rgba(59, 130, 246, 0.3),
-     inset 0 1px 0 rgba(255, 255, 255, 0.2);
- }
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+  }
 `;
 
 const ForgotPassword = styled.a`
- font-size: 0.9rem;
- background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
- -webkit-background-clip: text;
- -webkit-text-fill-color: transparent;
- background-clip: text;
- cursor: pointer;
- text-align: right;
- margin-top: -0.5rem;
- margin-bottom: 1rem;
- text-decoration: underline;
- transition: all 0.3s ease;
- font-weight: 500;
+  font-size: 0.9rem;
+  color: #93c5fd;
+  text-align: right;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: 0.3s ease;
+  display: block;
+  margin-bottom: 0.5rem;
 
- &:hover {
-   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-   -webkit-background-clip: text;
-   -webkit-text-fill-color: transparent;
-   background-clip: text;
-   transform: translateX(-2px);
- }
+  &:hover {
+    color: #60a5fa;
+  }
 `;
 
 export default function LoginModule() {
@@ -242,6 +234,7 @@ export default function LoginModule() {
           </div>
 
           <ForgotPassword href="#">Forgot password?</ForgotPassword>
+          <SignUpLink to="/signup">Don't have an account? Sign Up</SignUpLink>
 
           <Button type="submit">Log In</Button>
         </Form>
@@ -249,3 +242,18 @@ export default function LoginModule() {
     </Container>
   );
 }
+
+const SignUpLink = styled(Link)`
+  font-size: 0.9rem;
+  color: #60a5fa;
+  text-align: right;
+  text-decoration: underline;
+  cursor: pointer;
+  display: block;
+  margin-top: 0.25rem;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #93c5fd;
+  }
+`;
