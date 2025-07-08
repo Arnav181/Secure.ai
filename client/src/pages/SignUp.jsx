@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled, { keyframes } from "styled-components";
 import { Link } from "react-router-dom";
@@ -113,9 +114,7 @@ const Form = styled.form`
   border: 1px solid #1e3a8a;
   border-radius: 1rem;
   padding: 2.5rem;
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.4),
-    0 0 10px rgba(3, 102, 214, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 10px rgba(3, 102, 214, 0.2);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -187,6 +186,7 @@ export default function SignupModule() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate("");
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -200,6 +200,7 @@ export default function SignupModule() {
         .then((response) => {
           if (response.status === 201) {
             console.log("Form Submitted Successfully");
+            navigate("/");
           } else {
             console.log("Signup failed");
           }
