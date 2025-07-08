@@ -12,11 +12,9 @@ function App() {
         <div>
           {" "}
           <Routes>
-            <Route path="/" element= {<Navbar/>} />
             <Route path="/signup" element={<SignupModule />} />
             <Route path="/login" element={<LoginModule />} />
-            <Route path="/landing" element={<LandingModule/>} />
-            {/* Add more routes as needed */}
+            <Route path="/" element={<LandingModule/>} />
           </Routes>
         </div>
       </div>
