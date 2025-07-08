@@ -190,7 +190,8 @@ const Navbar = () => {
             </a>
           ))}
         </NavLinks>
-
+          
+          
         <CTA>
           <button>Profile</button>
         </CTA>
