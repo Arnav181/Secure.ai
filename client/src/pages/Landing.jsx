@@ -1,394 +1,369 @@
-import React from "react";
-import styled, { keyframes } from "styled-components";
-import Navbar from "../components/Navbar";
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, Shield, Code, Users, Zap, CheckCircle, Menu, X, ArrowRight, Star } from 'lucide-react';
 
-const moveBackground = keyframes`
-  0% {
-    background-position: 0 0, 0 0;
-  }
-  100% {
-    background-position: 40px 40px, 40px 40px;
-  }
-`;
+const SecureAiLanding = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
 
-const slideInLeft = keyframes`
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-`;
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-const slideInRight = keyframes`
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-`;
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMenuOpen(false);
+  };
 
-const Container = styled.div`
-  min-height: 100vh;
-  background-color: #000000;
-  background-image:
-    linear-gradient(90deg, #0a1a2a 50%, #000000 50%),
-    linear-gradient(#0a1a2a 50%, #000000 50%);
-  background-size: 40px 40px;
-  background-position: 0 0, 20px 20px;
-  animation: ${moveBackground} 20s linear infinite;
-  background-attachment: fixed;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-`;
-
-const ParallaxSection = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  z-index: 1;
-  padding: 0 1rem;
-  position: relative;
-`;
-
-const ContentSection = styled.section`
-  min-height: 100vh;
-  padding: 5rem 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  position: relative;
-  z-index: 2;
-`;
-
-const SectionTitle = styled.h2`
-  color: #3b82f6;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  text-align: center;
-  animation: ${fadeIn} 1s ease forwards;
-`;
-
-const SectionSubtitle = styled.h3`
-  color: #60a5fa;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  animation: ${slideInLeft} 1s ease forwards;
-`;
-
-const SectionText = styled.p`
-  color: #cbd5e1;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  max-width: 800px;
-  margin-bottom: 2rem;
-  text-align: center;
-  animation: ${fadeIn} 1.2s ease forwards;
-`;
-
-const WelcomeText = styled.h1`
-  color: #3b82f6;
-  font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  animation: ${fadeIn} 2s ease forwards;
-`;
-
-const Description = styled.p`
-  color: #93c5fd;
-  font-size: 1.25rem;
-  max-width: 600px;
-  animation: ${fadeIn} 2.5s ease forwards;
-`;
-
-const ServicesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 3rem;
-  max-width: 1200px;
-  width: 100%;
-`;
-
-const ServiceCard = styled.div`
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 2rem;
-  transition: all 0.3s ease;
-  animation: ${slideInRight} 1s ease forwards;
-  
-  &:hover {
-    transform: translateY(-10px);
-    border-color: #3b82f6;
-    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
-  }
-`;
-
-const ServiceIcon = styled.div`
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-`;
-
-const ServiceTitle = styled.h4`
-  color: #60a5fa;
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-`;
-
-const ServiceDescription = styled.p`
-  color: #cbd5e1;
-  line-height: 1.6;
-`;
-
-const AboutGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 3rem;
-  margin-top: 3rem;
-  max-width: 1000px;
-  width: 100%;
-`;
-
-const AboutCard = styled.div`
-  text-align: center;
-  animation: ${fadeIn} 1.5s ease forwards;
-`;
-
-const AboutIcon = styled.div`
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 2rem;
-`;
-
-const AboutTitle = styled.h4`
-  color: #60a5fa;
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-`;
-
-const AboutDescription = styled.p`
-  color: #cbd5e1;
-  line-height: 1.6;
-`;
-
-const Footer = styled.footer`
-  background: #0f172a;
-  border-top: 1px solid #334155;
-  padding: 3rem 2rem 1rem;
-  text-align: center;
-  z-index: 2;
-  position: relative;
-`;
-
-const FooterContent = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
-`;
-
-const FooterSection = styled.div`
-  text-align: left;
-`;
-
-const FooterTitle = styled.h4`
-  color: #3b82f6;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-`;
-
-const FooterLink = styled.a`
-  color: #94a3b8;
-  text-decoration: none;
-  display: block;
-  margin-bottom: 0.5rem;
-  transition: color 0.3s ease;
-  
-  &:hover {
-    color: #60a5fa;
-  }
-`;
-
-const FooterBottom = styled.div`
-  border-top: 1px solid #334155;
-  padding-top: 1rem;
-  color: #64748b;
-  font-size: 0.9rem;
-`;
-
-function LandingModule() {
   return (
-    <>
-      <Container>
-        <Navbar />
-        <ParallaxSection>
-          <WelcomeText>Welcome to Secure.ai</WelcomeText>
-          <Description>
-            Your trusted platform for secure and intelligent solutions. Explore our
-            codebase, learn about laws, get updates, and more.
-          </Description>
-        </ParallaxSection>
-      </Container>
+    <div className="bg-slate-900 text-white overflow-hidden">
+      {/* Navigation */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-slate-900/95 backdrop-blur-sm shadow-xl' : 'bg-transparent'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Secure.ai
+              </span>
+            </div>
 
-      <ContentSection>
-        <SectionTitle>Our Services</SectionTitle>
-        <SectionText>
-          We provide cutting-edge AI solutions with security at the forefront. Our comprehensive suite of services 
-          ensures your data remains protected while delivering powerful intelligent capabilities.
-        </SectionText>
-        <ServicesGrid>
-          <ServiceCard>
-            <ServiceIcon>⚖️</ServiceIcon>
-            <ServiceTitle>Legal Compliance</ServiceTitle>
-            <ServiceDescription>
-              Stay compliant with evolving regulations and laws. Our platform helps you navigate complex 
-              legal requirements in the AI space.
-            </ServiceDescription>
-          </ServiceCard>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#home" onClick={() => scrollToSection('home')} className="text-slate-300 hover:text-white transition-colors">Home</a>
+              <a href="#services" onClick={() => scrollToSection('services')} className="text-slate-300 hover:text-white transition-colors">Services</a>
+              <a href="#about" onClick={() => scrollToSection('about')} className="text-slate-300 hover:text-white transition-colors">About</a>
+              <button className="px-4 py-2 text-slate-300 hover:text-white transition-colors">
+                Sign In
+              </button>
+              <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg font-semibold transition-all transform hover:scale-105">
+                Sign Up
+              </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-slate-900/95 backdrop-blur-sm border-t border-slate-700">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <a href="#home" onClick={() => scrollToSection('home')} className="block px-3 py-2 text-slate-300 hover:text-white transition-colors">Home</a>
+              <a href="#services" onClick={() => scrollToSection('services')} className="block px-3 py-2 text-slate-300 hover:text-white transition-colors">Services</a>
+              <a href="#about" onClick={() => scrollToSection('about')} className="block px-3 py-2 text-slate-300 hover:text-white transition-colors">About</a>
+              <div className="pt-4 pb-3 border-t border-slate-700">
+                <button className="block w-full text-left px-3 py-2 text-slate-300 hover:text-white transition-colors">
+                  Sign In
+                </button>
+                <button className="block w-full mt-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg font-semibold transition-all">
+                  Sign Up
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {/* Hero Section */}
+      <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-purple-900/20"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(59,130,246,0.05)_50%,transparent_100%)] animate-pulse"></div>
+        </div>
+
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
+          <div className="animate-fade-in-up">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+              Secure.ai
+              <span className="block text-4xl md:text-6xl mt-2">
+                Security Platform
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Comprehensive cybersecurity platform for students and professionals. 
+              Analyze projects, stay compliant with laws, and get AI-powered security guidance.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl shadow-blue-500/25 flex items-center space-x-2">
+                <span>Start Free Analysis</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+              <button className="px-8 py-4 border-2 border-slate-600 hover:border-slate-400 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 backdrop-blur-sm">
+                Try AI Assistant
+              </button>
+            </div>
+          </div>
+
+          {/* Floating Cards */}
+          <div className="absolute top-20 left-10 animate-float">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-slate-300">AI Assistant Active</span>
+              </div>
+            </div>
+          </div>
           
-          <ServiceCard>
-            <ServiceIcon>🔍</ServiceIcon>
-            <ServiceTitle>Code Analysis</ServiceTitle>
-            <ServiceDescription>
-              Comprehensive code review and security analysis tools to ensure your applications 
-              meet the highest standards.
-            </ServiceDescription>
-          </ServiceCard>
-          <ServiceCard>
-            <ServiceIcon>📊</ServiceIcon>
-            <ServiceTitle>Real-time Updates</ServiceTitle>
-            <ServiceDescription>
-              Stay informed with real-time updates on security threats, legal changes, and 
-              technology developments.
-            </ServiceDescription>
-          </ServiceCard>
-        </ServicesGrid>
-      </ContentSection>
+          <div className="absolute top-40 right-10 animate-float-delayed">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-4 h-4 text-blue-400" />
+                <span className="text-sm text-slate-300">Threat Detection</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <ContentSection style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
-        <SectionTitle>About Us</SectionTitle>
-        <SectionText>
-          At Secure.ai, we believe that artificial intelligence should be both powerful and secure. 
-          Our mission is to bridge the gap between cutting-edge AI technology and enterprise security, 
-          providing solutions that don't compromise on either front.
-        </SectionText>
-        <AboutGrid>
-          <AboutCard>
-            <AboutIcon>🎯</AboutIcon>
-            <AboutTitle>Our Mission</AboutTitle>
-            <AboutDescription>
-              To democratize secure AI solutions and make advanced artificial intelligence accessible 
-              to businesses of all sizes while maintaining the highest security standards.
-            </AboutDescription>
-          </AboutCard>
-          <AboutCard>
-            <AboutIcon>👥</AboutIcon>
-            <AboutTitle>Our Team</AboutTitle>
-            <AboutDescription>
-              A diverse group of AI researchers, security experts, and legal professionals working 
-              together to create the most secure and intelligent platform.
-            </AboutDescription>
-          </AboutCard>
-          <AboutCard>
-            <AboutIcon>🔮</AboutIcon>
-            <AboutTitle>Our Vision</AboutTitle>
-            <AboutDescription>
-              To become the leading platform for secure AI solutions, setting new standards for 
-              privacy, security, and intelligent automation in the digital age.
-            </AboutDescription>
-          </AboutCard>
-          <AboutCard>
-            <AboutIcon>💡</AboutIcon>
-            <AboutTitle>Innovation</AboutTitle>
-            <AboutDescription>
-              Constantly pushing the boundaries of what's possible with AI while ensuring every 
-              solution meets rigorous security and compliance requirements.
-            </AboutDescription>
-          </AboutCard>
-        </AboutGrid>
-      </ContentSection>
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-8 h-8 text-slate-400" />
+        </div>
+      </section>
 
-      <Footer>
-        <FooterContent>
-          <FooterSection>
-            <FooterTitle>Company</FooterTitle>
-            <FooterLink href="#about">About Us</FooterLink>
-            <FooterLink href="#services">Services</FooterLink>
-            <FooterLink href="#careers">Careers</FooterLink>
-            <FooterLink href="#contact">Contact</FooterLink>
-          </FooterSection>
-          <FooterSection>
-            <FooterTitle>Products</FooterTitle>
-            <FooterLink href="#ai-solutions">AI Solutions</FooterLink>
-            <FooterLink href="#security">Security Tools</FooterLink>
-            <FooterLink href="#compliance">Compliance</FooterLink>
-            <FooterLink href="#analytics">Analytics</FooterLink>
-          </FooterSection>
-          <FooterSection>
-            <FooterTitle>Resources</FooterTitle>
-            <FooterLink href="#docs">Documentation</FooterLink>
-            <FooterLink href="#blog">Blog</FooterLink>
-            <FooterLink href="#support">Support</FooterLink>
-            <FooterLink href="#api">API</FooterLink>
-          </FooterSection>
-          <FooterSection>
-            <FooterTitle>Legal</FooterTitle>
-            <FooterLink href="#privacy">Privacy Policy</FooterLink>
-            <FooterLink href="#terms">Terms of Service</FooterLink>
-            <FooterLink href="#cookies">Cookie Policy</FooterLink>
-            <FooterLink href="#security">Security</FooterLink>
-          </FooterSection>
-        </FooterContent>
-        <FooterBottom>
-          <p>&copy; 2025 Secure.ai. All rights reserved. | Empowering secure AI solutions worldwide.</p>
-        </FooterBottom>
-      </Footer>
-    </>
+      {/* Services Section */}
+      <section id="services" className="py-20 bg-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Our Services
+            </h2>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+              We provide comprehensive cybersecurity solutions for students, developers, and organizations. 
+              Our platform combines automated security analysis, legal compliance guidance, and AI-powered 
+              assistance to help you build secure applications and respond to cyber threats effectively.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                icon: "🔍",
+                title: "Project Security Analysis",
+                description: "Upload your small-scale projects and get detailed cybersecurity vulnerability assessments with enhancement recommendations."
+              },
+              {
+                icon: "⚖️",
+                title: "Legal Compliance Hub",
+                description: "Access comprehensive documentation on cybersecurity laws, regulations, and compliance requirements in your country."
+              },
+              {
+                icon: "🤖",
+                title: "AI Security Assistant",
+                description: "Get instant guidance on cybersecurity incidents, scam responses, and attack mitigation strategies through our intelligent chatbot."
+              },
+              {
+                icon: "📚",
+                title: "Security Education",
+                description: "Learn cybersecurity fundamentals through interactive content, tutorials, and personalized learning paths."
+              }
+            ].map((service, index) => (
+              <div key={index} className="group p-6 bg-slate-900/50 backdrop-blur-sm border border-slate-700 rounded-xl hover:border-blue-500/50 transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/10">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-2xl">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2 text-white">{service.title}</h3>
+                <p className="text-slate-300 leading-relaxed">{service.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              About Us
+            </h2>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+              At Secure.ai, we believe cybersecurity should be accessible to everyone. 
+              Our mission is to democratize cybersecurity knowledge and tools, helping students 
+              and professionals build secure applications while staying informed about the latest 
+              threats and compliance requirements.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                icon: "🎯",
+                title: "Our Mission",
+                description: "To make cybersecurity accessible to students and professionals through automated analysis, comprehensive legal guidance, and intelligent assistance."
+              },
+              {
+                icon: "👥",
+                title: "Our Team",
+                description: "Cybersecurity experts, legal professionals, and AI specialists working together to create the most comprehensive security education platform."
+              },
+              {
+                icon: "🔮",
+                title: "Our Vision",
+                description: "To build a safer digital world by empowering the next generation of developers with cybersecurity knowledge and practical tools."
+              },
+              {
+                icon: "💡",
+                title: "Innovation",
+                description: "Combining cutting-edge AI technology with practical cybersecurity expertise to provide real-time guidance and educational resources."
+              }
+            ].map((item, index) => (
+              <div key={index} className="text-center group hover:scale-105 transition-transform">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl group-hover:scale-110 transition-transform">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-white">{item.title}</h3>
+                <p className="text-slate-300 leading-relaxed">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+            Ready to Secure Your Projects?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Join students and professionals using Secure.ai to build secure applications and stay protected from cyber threats.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
+              Sign Up Now
+            </button>
+            <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-all transform hover:scale-105">
+              Learn More
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 border-t border-slate-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="md:col-span-1">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  Secure.ai
+                </span>
+              </div>
+              <p className="text-slate-400 mb-4">
+                The comprehensive platform for cybersecurity education, project analysis, and threat response.
+              </p>
+              <div className="flex space-x-4">
+                <div className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 cursor-pointer transition-colors">
+                  <span className="text-xs">T</span>
+                </div>
+                <div className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 cursor-pointer transition-colors">
+                  <span className="text-xs">L</span>
+                </div>
+                <div className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 cursor-pointer transition-colors">
+                  <span className="text-xs">G</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-semibold mb-4">Product</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Features</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Pricing</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">API</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Documentation</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-semibold mb-4">Company</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">About</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Careers</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Contact</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Blog</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Security</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Compliance</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-slate-700 mt-8 pt-8 text-center">
+            <p className="text-slate-400">
+              © 2025 Secure.ai. All rights reserved. | Empowering secure development and cybersecurity education.
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      <style jsx>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 1s ease-out;
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-float-delayed {
+          animation: float 3s ease-in-out infinite;
+          animation-delay: 1s;
+        }
+      `}</style>
+    </div>
   );
-}
+};
 
-export default LandingModule;
+export default SecureAiLanding;
