@@ -1,192 +1,13 @@
 import { useState } from "react";
+import { Shield, Mail, Lock, UserPlus, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import styled, { keyframes } from "styled-components";
-import { Link } from "react-router-dom";
-
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
-
-const slideInLeft = keyframes`
-  from {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-`;
-
-const slideInRight = keyframes`
-  from {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-`;
-
-const gradientAnimation = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-`;
-
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #000814, #001d3d);
-  background-size: 200% 200%;
-  animation: ${gradientAnimation} 15s ease infinite;
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const LeftSection = styled.div`
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  animation: ${slideInLeft} 1s ease forwards;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.9) contrast(1.05);
-    transition: transform 0.5s ease;
-  }
-
-  &:hover img {
-    transform: scale(1.05) rotate(1deg);
-  }
-
-  @media (max-width: 768px) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-  }
-`;
-
-const RightSection = styled.div`
-  flex: 1;
-  background: linear-gradient(135deg, #000814, #001d3d);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  min-height: 100vh;
-  z-index: 2;
-  animation: ${slideInRight} 1s ease forwards;
-
-  @media (max-width: 768px) {
-    position: relative;
-    background: transparent;
-    backdrop-filter: blur(6px);
-    padding: 1.5rem;
-    min-height: unset; /* <-- fix added */
-  }
-`;
-
-const Form = styled.form`
-  width: 100%;
-  max-width: 30rem;
-  background: #0a192f;
-  border: 1px solid #1e3a8a;
-  border-radius: 1rem;
-  padding: 2.5rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 10px rgba(3, 102, 214, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  animation: ${fadeIn} 1.5s ease forwards;
-
-  @media (max-width: 768px) {
-    background: #0a192f;
-    padding: 2rem;
-  }
-`;
-
-const Title = styled.h2`
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  color: #3b82f6;
-`;
-
-const Label = styled.label`
-  font-size: 0.95rem;
-  color: #cbd5e1;
-  margin-bottom: 0.4rem;
-  font-weight: 500;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 1px solid #3b82f6;
-  background: #1e293b;
-  color: #e0f2fe;
-  border-radius: 0.5rem;
-  outline: none;
-  transition: all 0.3s ease;
-
-  &:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
-    background: #273549;
-  }
-`;
-
-const Button = styled.button`
-  padding: 0.75rem;
-  font-size: 1rem;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
-
-  &:hover {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.6);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
-  }
-`;
 
 export default function SignupModule() {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate("");
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -211,70 +32,148 @@ export default function SignupModule() {
   };
 
   return (
-    <Container>
-      <LeftSection>
+    <div className="min-h-screen bg-slate-900 flex overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-purple-900/20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]"></div>
+
+      {/* Left Image Section */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 z-10"></div>
         <img
           src="https://images.unsplash.com/photo-1548092372-0d1bd40894a3?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fGN5YmVyc2VjdXJpdHl8ZW58MHx8MHx8fDA%3D"
           alt="Signup Visual"
+          className="w-full h-full object-cover filter brightness-75 contrast-105"
         />
-      </LeftSection>
 
-      <RightSection>
-        <Form onSubmit={handleOnSubmit}>
-          <Title>Sign Up</Title>
+        {/* Floating Highlights */}
+        <div className="absolute top-20 left-10 z-20 animate-float">
+          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
+            <div className="flex items-center space-x-2">
+              <UserPlus className="w-4 h-4 text-green-400" />
+              <span className="text-sm text-slate-300">Create Account</span>
+            </div>
+          </div>
+        </div>
 
-          <div>
-            <Label>Name</Label>
-            <Input
-              type="text"
-              placeholder="Your Name"
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
+        <div className="absolute bottom-20 right-10 z-20 animate-float-delayed">
+          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
+            <div className="flex items-center space-x-2">
+              <Shield className="w-4 h-4 text-blue-400" />
+              <span className="text-sm text-slate-300">Your data is protected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Form Section */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative z-10">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <UserPlus className="w-7 h-7 text-white" />
+              </div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Secure.ai
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Create your account</h2>
+            <p className="text-slate-400">Join us to get started</p>
           </div>
 
-          <div>
-            <Label>Email</Label>
-            <Input
-              type="email"
-              placeholder="you@example.com"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          </div>
+          <form onSubmit={handleOnSubmit} className="space-y-6">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 shadow-2xl">
+              {/* Name Field */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Name</label>
+                <div className="relative">
+                  <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Your Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                    required
+                  />
+                </div>
+              </div>
 
-          <div>
-            <Label>Password</Label>
-            <Input
-              type="password"
-              placeholder="••••••••"
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </div>
+              {/* Email Field */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                    required
+                  />
+                </div>
+              </div>
 
-          <Button type="submit">Create Account</Button>
-          <LogInLink to="/login">Already have an account? Log In</LogInLink>
-        </Form>
-      </RightSection>
-    </Container>
+              {/* Password Field */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Signup Button */}
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-xl shadow-blue-500/25 flex items-center justify-center space-x-2"
+              >
+                <span>Create Account</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+
+              {/* Log In Link */}
+              <div className="text-center mt-6">
+                <p className="text-slate-400">
+                  Already have an account?{" "}
+                  <a href="/login" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                    Log In
+                  </a>
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float 3s ease-in-out infinite;
+          animation-delay: 1s;
+        }
+      `}</style>
+    </div>
   );
 }
-
-const LogInLink = styled(Link)`
-  font-size: 0.9rem;
-  color: #6a2bbb;
-  text-align: right;
-  text-decoration: underline;
-  cursor: pointer;
-  display: block;
-  margin-top: 0.25rem;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: #8740d4;
-  }
-`;
