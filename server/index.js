@@ -2,6 +2,7 @@ const express = require("express");
 const { connectDatabase } = require("./connection");
 require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
+const llmRoutes = require("./routes/llmRoutes");
 const PORT = process.env.PORT;
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
 const cors = require("cors");
@@ -21,6 +22,7 @@ connectDatabase(MONGO_CONNECTION_STRING).then(() => {
 });
 
 app.use("/user", userRoutes);
+app.use("/llm", llmRoutes);
 
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
