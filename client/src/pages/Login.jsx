@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Shield, Eye, EyeOff, Lock, Mail, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function LoginModule() {
   const navigate = useNavigate("");
@@ -20,7 +21,7 @@ export default function LoginModule() {
         .then((response) => {
           if (response.status === 201) {
             console.log("Login Successfull");
-            navigate("/");
+            navigate("/chat");
           } else {
             console.log("Login Failed");
           }
