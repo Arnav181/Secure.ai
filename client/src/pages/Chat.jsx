@@ -1,30 +1,29 @@
-import React, { useState } from 'react';
-import { UploadCloud, Send, Loader2 } from 'lucide-react';
+import { useState } from "react";
+import { UploadCloud, Send, Loader2 } from "lucide-react";
 
 const Chat = () => {
   const [file, setFile] = useState(null);
-  const [response, setResponse] = useState('');
+  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    setResponse('');
+    setResponse("");
   };
 
   const handleSubmit = async () => {
     if (!file) return;
     setLoading(true);
-    setResponse('');
+    setResponse("");
 
-    // Simulate LLM response for now (replace with actual API call)
     setTimeout(() => {
       setResponse(
         `The uploaded file "${file.name}" can be improved by:\n` +
-        '- Adding comments for better readability.\n' +
-        '- Refactoring large functions into smaller ones.\n' +
-        '- Ensuring consistent naming conventions.\n' +
-        '- Adding error handling and validation.\n' +
-        '- Optimizing performance-critical sections.'
+          "- Adding comments for better readability.\n" +
+          "- Refactoring large functions into smaller ones.\n" +
+          "- Ensuring consistent naming conventions.\n" +
+          "- Adding error handling and validation.\n" +
+          "- Optimizing performance-critical sections."
       );
       setLoading(false);
     }, 2000);
@@ -43,7 +42,7 @@ const Chat = () => {
         >
           <UploadCloud className="w-12 h-12 text-blue-400 mb-4" />
           <span className="text-slate-300">
-            {file ? file.name : 'Click to upload your file'}
+            {file ? file.name : "Click to upload your file"}
           </span>
           <input
             id="file-upload"
@@ -58,8 +57,8 @@ const Chat = () => {
           disabled={!file || loading}
           className={`mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-all transform ${
             file && !loading
-              ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30 hover:scale-105'
-              : 'bg-slate-700 cursor-not-allowed opacity-50'
+              ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30 hover:scale-105"
+              : "bg-slate-700 cursor-not-allowed opacity-50"
           }`}
         >
           {loading ? (
@@ -84,6 +83,5 @@ const Chat = () => {
     </div>
   );
 };
-
 
 export default Chat;
