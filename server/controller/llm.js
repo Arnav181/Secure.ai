@@ -43,7 +43,7 @@ ${content}
     console.log("Sending prompt to Ollama...");
 
     const response = await axios.post("http://localhost:11434/api/generate", {
-      model: "llama3",
+      model: "llama3.2",
       prompt: prompt,
       stream: false,
     });
