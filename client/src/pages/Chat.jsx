@@ -1,32 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { UploadCloud, Send, Loader2 } from "lucide-react";
 
 const Chat = () => {
   const [file, setFile] = useState(null);
-  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState("upload"); // "upload" or "chat"
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (mode === "chat") {
+      scrollToBottom();
+    }
+  }, [messages, mode]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    setResponse("");
   };
 
-  const handleSubmit = async () => {
+  const handleAnalyze = () => {
     if (!file) return;
     setLoading(true);
-    setResponse("");
 
     setTimeout(() => {
-      setResponse(
-        `The uploaded file "${file.name}" can be improved by:\n` +
-          "- Adding comments for better readability.\n" +
-          "- Refactoring large functions into smaller ones.\n" +
-          "- Ensuring consistent naming conventions.\n" +
-          "- Adding error handling and validation.\n" +
-          "- Optimizing performance-critical sections."
-      );
+      const initialResponse = `The uploaded file "${file.name}" can be improved by:\n` +
+        "- Adding comments for better readability.\n" +
+        "- Refactoring large functions into smaller ones.\n" +
+        "- Ensuring consistent naming conventions.\n" +
+        "- Adding error handling and validation.\n" +
+        "- Optimizing performance-critical sections.";
+
+      setMessages([
+        { sender: "llm", text: initialResponse }
+      ]);
       setLoading(false);
+      setMode("chat");
     }, 2000);
+  };
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+
+    const userMessage = { sender: "user", text: input.trim() };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setLoading(true);
+
+    // Simulate LLM response
+    setTimeout(() => {
+      const llmResponse = `LLM response to: "${userMessage.text}"`;
+      setMessages((prev) => [...prev, { sender: "llm", text: llmResponse }]);
+      setLoading(false);
+    }, 1500);
   };
 
   return (
@@ -35,51 +65,105 @@ const Chat = () => {
         AI File Improvement Chat
       </h1>
 
-      <div className="w-full max-w-3xl bg-slate-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-slate-700">
-        <label
-          htmlFor="file-upload"
-          className="flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-lg p-8 cursor-pointer hover:border-blue-500 transition-colors"
-        >
-          <UploadCloud className="w-12 h-12 text-blue-400 mb-4" />
-          <span className="text-slate-300">
-            {file ? file.name : "Click to upload your file"}
-          </span>
-          <input
-            id="file-upload"
-            type="file"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-        </label>
+      {mode === "upload" && (
+        <div className="w-full max-w-3xl bg-slate-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-slate-700">
+          <label
+            htmlFor="file-upload"
+            className="flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-lg p-8 cursor-pointer hover:border-blue-500 transition-colors"
+          >
+            <UploadCloud className="w-12 h-12 text-blue-400 mb-4" />
+            <span className="text-slate-300">
+              {file ? file.name : "Click to upload your file"}
+            </span>
+            <input
+              id="file-upload"
+              type="file"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </label>
 
-        <button
-          onClick={handleSubmit}
-          disabled={!file || loading}
-          className={`mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-all transform ${
-            file && !loading
-              ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30 hover:scale-105"
-              : "bg-slate-700 cursor-not-allowed opacity-50"
-          }`}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Analyzing...</span>
-            </>
-          ) : (
-            <>
-              <Send className="w-5 h-5" />
-              <span>Analyze File</span>
-            </>
-          )}
-        </button>
+          <button
+            onClick={handleAnalyze}
+            disabled={!file || loading}
+            className={`mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-all transform ${
+              file && !loading
+                ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30"
+                : "bg-slate-700 cursor-not-allowed opacity-50"
+            }`}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Analyzing...</span>
+              </>
+            ) : (
+              <>
+                <Send className="w-5 h-5" />
+                <span>Analyze File</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
-        {response && (
-          <div className="mt-8 bg-slate-700 rounded-lg p-4 whitespace-pre-line text-slate-200 shadow-inner">
-            {response}
+      {mode === "chat" && (
+        <div className="w-full max-w-3xl flex flex-col bg-slate-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-slate-700">
+          <div className="flex-1 overflow-y-auto max-h-[60vh] space-y-4 mb-4">
+            {messages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${
+                  msg.sender === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`rounded-lg px-4 py-2 max-w-[70%] whitespace-pre-wrap ${
+                    msg.sender === "user"
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                      : "bg-slate-700 text-slate-200"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
           </div>
-        )}
-      </div>
+
+          <div className="flex items-center gap-4">
+            <input
+              type="text"
+              className="flex-1 rounded-lg px-4 py-2 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !loading) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              disabled={loading}
+            />
+            <button
+              onClick={handleSend}
+              disabled={loading || !input.trim()}
+              className={`p-2 rounded-lg ${
+                loading || !input.trim()
+                  ? "bg-slate-700 cursor-not-allowed opacity-50"
+                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30"
+              }`}
+            >
+              {loading ? (
+                <Loader2 className="w-6 h-6 animate-spin text-white" />
+              ) : (
+                <Send className="w-6 h-6 text-white" />
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
