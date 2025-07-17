@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Shield, Eye, EyeOff, Lock, Mail, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
 export default function LoginModule() {
   const navigate = useNavigate("");
   const [email, setEmail] = useState("");
