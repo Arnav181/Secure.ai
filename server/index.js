@@ -22,7 +22,7 @@ connectDatabase(MONGO_CONNECTION_STRING).then(() => {
 });
 
 app.use("/user", userRoutes);
-app.use("/llm", llmRoutes);
+app.use("/chat", llmRoutes);
 
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
