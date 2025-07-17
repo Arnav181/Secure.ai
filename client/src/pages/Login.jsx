@@ -33,11 +33,9 @@ export default function LoginModule() {
 
   return (
     <div className="min-h-screen bg-slate-900 flex overflow-hidden">
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-purple-900/20"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]"></div>
-      
-      {/* Left Section - Image */}
+
       <div className="hidden lg:flex lg:w-1/2 relative">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 z-10"></div>
         <img
@@ -45,8 +43,7 @@ export default function LoginModule() {
           alt="Cybersecurity"
           className="w-full h-full object-cover filter brightness-75 contrast-105"
         />
-        
-        {/* Floating Elements */}
+
         <div className="absolute top-20 left-10 z-20 animate-float">
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
             <div className="flex items-center space-x-2">
@@ -55,7 +52,7 @@ export default function LoginModule() {
             </div>
           </div>
         </div>
-        
+
         <div className="absolute bottom-20 right-10 z-20 animate-float-delayed">
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
             <div className="flex items-center space-x-2">
@@ -65,11 +62,8 @@ export default function LoginModule() {
           </div>
         </div>
       </div>
-
-      {/* Right Section - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative z-10">
         <div className="w-full max-w-md">
-          {/* Logo and Title */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
@@ -80,13 +74,13 @@ export default function LoginModule() {
               </span>
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
-            <p className="text-slate-400">Sign in to your account to continue</p>
+            <p className="text-slate-400">
+              Sign in to your account to continue
+            </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleOnSubmit} className="space-y-6">
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 shadow-2xl">
-              {/* Email Field */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Email Address
@@ -103,8 +97,6 @@ export default function LoginModule() {
                   />
                 </div>
               </div>
-
-              {/* Password Field */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Password
@@ -124,14 +116,19 @@ export default function LoginModule() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </div>
-
-              {/* Forgot Password */}
               <div className="text-right mb-6">
-                <a href="#" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                <a
+                  href="#"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                >
                   Forgot your password?
                 </a>
               </div>
@@ -144,12 +141,13 @@ export default function LoginModule() {
                 <span>Sign In</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
-
-              {/* Sign Up Link */}
               <div className="text-center mt-6">
                 <p className="text-slate-400">
                   Don't have an account?{" "}
-                  <a href="/signup" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                  <a
+                    href="/signup"
+                    className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                  >
                     Sign Up
                   </a>
                 </p>
@@ -157,7 +155,6 @@ export default function LoginModule() {
             </div>
           </form>
 
-          {/* Additional Features */}
           <div className="mt-8 text-center">
             <div className="flex items-center justify-center space-x-4 text-sm text-slate-400">
               <div className="flex items-center space-x-1">
@@ -176,18 +173,19 @@ export default function LoginModule() {
 
       <style jsx>{`
         @keyframes float {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0px);
           }
           50% {
             transform: translateY(-10px);
           }
         }
-        
+
         .animate-float {
           animation: float 3s ease-in-out infinite;
         }
-        
+
         .animate-float-delayed {
           animation: float 3s ease-in-out infinite;
           animation-delay: 1s;

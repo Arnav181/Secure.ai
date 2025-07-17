@@ -33,11 +33,9 @@ export default function SignupModule() {
 
   return (
     <div className="min-h-screen bg-slate-900 flex overflow-hidden">
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-purple-900/20"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]"></div>
 
-      {/* Left Image Section */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 z-10"></div>
         <img
@@ -46,7 +44,6 @@ export default function SignupModule() {
           className="w-full h-full object-cover filter brightness-75 contrast-105"
         />
 
-        {/* Floating Highlights */}
         <div className="absolute top-20 left-10 z-20 animate-float">
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
             <div className="flex items-center space-x-2">
@@ -60,13 +57,14 @@ export default function SignupModule() {
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl">
             <div className="flex items-center space-x-2">
               <Shield className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-slate-300">Your data is protected</span>
+              <span className="text-sm text-slate-300">
+                Your data is protected
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Right Form Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative z-10">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
@@ -78,15 +76,18 @@ export default function SignupModule() {
                 Secure.ai
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Create your account</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Create your account
+            </h2>
             <p className="text-slate-400">Join us to get started</p>
           </div>
 
           <form onSubmit={handleOnSubmit} className="space-y-6">
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 shadow-2xl">
-              {/* Name Field */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Name</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Name
+                </label>
                 <div className="relative">
                   <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -100,9 +101,10 @@ export default function SignupModule() {
                 </div>
               </div>
 
-              {/* Email Field */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Email
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -116,9 +118,10 @@ export default function SignupModule() {
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -132,7 +135,6 @@ export default function SignupModule() {
                 </div>
               </div>
 
-              {/* Signup Button */}
               <button
                 type="submit"
                 className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-xl shadow-blue-500/25 flex items-center justify-center space-x-2"
@@ -141,11 +143,13 @@ export default function SignupModule() {
                 <ArrowRight className="w-5 h-5" />
               </button>
 
-              {/* Log In Link */}
               <div className="text-center mt-6">
                 <p className="text-slate-400">
                   Already have an account?{" "}
-                  <a href="/login" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                  <a
+                    href="/login"
+                    className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                  >
                     Log In
                   </a>
                 </p>
@@ -157,7 +161,8 @@ export default function SignupModule() {
 
       <style jsx>{`
         @keyframes float {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0px);
           }
           50% {
