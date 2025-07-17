@@ -1,10 +1,11 @@
+import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { UploadCloud, Send, Loader2 } from "lucide-react";
 
 const Chat = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState("upload"); // "upload" or "chat"
+  const [mode, setMode] = useState("upload");
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -23,27 +24,37 @@ const Chat = () => {
     setFile(e.target.files[0]);
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!file) return;
     setLoading(true);
 
-    setTimeout(() => {
-      const initialResponse = `The uploaded file "${file.name}" can be improved by:\n` +
-        "- Adding comments for better readability.\n" +
-        "- Refactoring large functions into smaller ones.\n" +
-        "- Ensuring consistent naming conventions.\n" +
-        "- Adding error handling and validation.\n" +
-        "- Optimizing performance-critical sections.";
-
-      setMessages([
-        { sender: "llm", text: initialResponse }
-      ]);
-      setLoading(false);
+    try {
+      const formData = new FormData();
+      formData.append("zipfile", file);
+      const response = await axios.post(
+        "http://localhost:8080/chat/codebase",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setMessages([{ sender: "llm", text: response.data.suggestions }]);
       setMode("chat");
-    }, 2000);
+    } catch (err) {
+      console.log("Error in sending file", err);
+      setLoading(false);
+      setMessages([
+        { sender: "llm", text: "File analysis failed. Please try again." },
+      ]);
+      setMode("chat");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage = { sender: "user", text: input.trim() };
@@ -51,12 +62,26 @@ const Chat = () => {
     setInput("");
     setLoading(true);
 
-    // Simulate LLM response
-    setTimeout(() => {
-      const llmResponse = `LLM response to: "${userMessage.text}"`;
-      setMessages((prev) => [...prev, { sender: "llm", text: llmResponse }]);
+    try {
+      const response = await axios.post("http://localhost:8080/chat/codebase", {
+        message: input.trim(),
+      });
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "llm",
+          text: response.data.suggestions || response.data.response,
+        },
+      ]);
+    } catch (err) {
+      console.error("Chat failed:", err);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "llm", text: "Sorry, I couldn't process your request." },
+      ]);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -79,6 +104,7 @@ const Chat = () => {
               id="file-upload"
               type="file"
               className="hidden"
+              accept=".zip,application/zip"
               onChange={handleFileChange}
             />
           </label>
