@@ -20,7 +20,7 @@ const analyzeZip = async (req, res) => {
     entries.forEach((entry) => {
       if (
         !entry.isDirectory &&
-        entry.entryName.match(/\.(js|py|html|txt|json)$/)
+        entry.entryName.match(/\.(js|py|html|txt|jsx|go|rs|java|json)$/)
       ) {
         content += zip.readAsText(entry) + "\n\n";
       }
@@ -30,7 +30,8 @@ const analyzeZip = async (req, res) => {
       console.log("No valid files found in ZIP.");
       return res.status(400).json({
         success: false,
-        message: "No valid files (.js, .py, .html, .txt, .json) found in ZIP.",
+        message:
+          "No valid files (.js, .py, .html, .txt, jsx, go, .json) found in ZIP.",
       });
     }
 
