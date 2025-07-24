@@ -31,6 +31,7 @@ const Chat = () => {
     try {
       const formData = new FormData();
       formData.append("zipfile", file);
+
       const response = await axios.post(
         "http://localhost:8080/chat/codebase",
         formData,
@@ -40,11 +41,11 @@ const Chat = () => {
           },
         }
       );
+
       setMessages([{ sender: "llm", text: response.data.suggestions }]);
       setMode("chat");
     } catch (err) {
-      console.log("Error in sending file", err);
-      setLoading(false);
+      console.error("Error in sending file", err);
       setMessages([
         { sender: "llm", text: "File analysis failed. Please try again." },
       ]);
@@ -63,14 +64,21 @@ const Chat = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8080/chat/codebase", {
-        message: input.trim(),
-      });
+      const response = await axios.post(
+        "http://localhost:8080/chat/message",
+        { message: input.trim() },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       setMessages((prev) => [
         ...prev,
         {
           sender: "llm",
-          text: response.data.suggestions || response.data.response,
+          text: response.data.reply,
         },
       ]);
     } catch (err) {
