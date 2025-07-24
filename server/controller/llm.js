@@ -65,4 +65,43 @@ ${content}
   }
 };
 
-module.exports = { analyzeZip };
+const chatMessage = async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Message is required and must be a string.",
+      });
+    }
+
+    const prompt = `
+You are a cybersecurity assistant. Here's the user's question:
+
+"${message}"
+
+Respond clearly and concisely.
+    `.trim();
+
+    const response = await axios.post("http://localhost:11434/api/generate", {
+      model: "llama3.2",
+      prompt: prompt,
+      stream: false,
+    });
+
+    return res.status(200).json({
+      success: true,
+      reply: response.data.response,
+    });
+  } catch (error) {
+    console.error("Chat LLM Error:", error?.response?.data || error.message);
+    return res.status(500).json({
+      success: false,
+      message: "LLM chat failed.",
+      error: error?.response?.data || error.message,
+    });
+  }
+};
+
+module.exports = { analyzeZip, chatMessage };
