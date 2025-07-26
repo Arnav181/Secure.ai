@@ -104,4 +104,14 @@ Respond clearly and concisely.
   }
 };
 
-module.exports = { analyzeZip, chatMessage };
+const chatBotMessage = async (req, res) => {
+  const { message } = req.body;
+  if (!message || typeof message != "string") {
+    return res
+      .status(400)
+      .json({ msg: "Enter a valid message", success: false });
+  }
+  return res.status(200).json({ message: message });
+};
+
+module.exports = { analyzeZip, chatMessage, chatBotMessage };
