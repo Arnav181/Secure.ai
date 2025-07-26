@@ -132,7 +132,7 @@ const chatBotMessage = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "LLM chat failed.",
-      error: error?.response?.data || error.message,
+      error: err?.response?.data || error.message,
     });
   }
 };
