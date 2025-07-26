@@ -77,11 +77,11 @@ const chatMessage = async (req, res) => {
     }
 
     const prompt = `
-You are a cybersecurity assistant. Here's the user's question:
+  You are a cybersecurity assistant. Here's the user's question:
 
-"${message}"
-
-Respond clearly and concisely.
+  "${message}"
+  
+  Respond clearly and concisely.
     `.trim();
 
     const response = await axios.post("http://localhost:11434/api/generate", {
@@ -106,12 +106,35 @@ Respond clearly and concisely.
 
 const chatBotMessage = async (req, res) => {
   const { message } = req.body;
-  if (!message || typeof message != "string") {
-    return res
-      .status(400)
-      .json({ msg: "Enter a valid message", success: false });
+  try {
+    if (!message || typeof message != "string") {
+      return res
+        .status(400)
+        .json({ msg: "Enter a valid message", success: false });
+    }
+    const prompt = `You are an expert cybersecurity assistant. You are only allowed to answer questions strictly related to cybersecurity topics, such as network security, ethical hacking, malware, firewalls, penetration testing, encryption, secure coding, and related domains.
+
+  If the user asks a question that is not related to cybersecurity, politely but firmly respond with:
+
+  "I’m sorry, I can only answer questions related to cybersecurity."
+
+  Do not attempt to answer or provide information outside the cybersecurity domain under any circumstances. With that keeping in mind , here is the question ${message}
+`;
+
+    const response = axios.post("http://localhost:11434/api/generate", {
+      model: "llama 3.2",
+      prompt: prompt,
+      stream: false,
+    });
+    return res.status(200).json({ success: true, response: response.data });
+  } catch (err) {
+    console.log("Error in sending data to ollama,", err);
+    return res.status(500).json({
+      success: false,
+      message: "LLM chat failed.",
+      error: error?.response?.data || error.message,
+    });
   }
-  return res.status(200).json({ message: message });
 };
 
 module.exports = { analyzeZip, chatMessage, chatBotMessage };
