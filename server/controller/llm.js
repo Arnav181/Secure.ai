@@ -121,18 +121,20 @@ const chatBotMessage = async (req, res) => {
   Do not attempt to answer or provide information outside the cybersecurity domain under any circumstances. With that keeping in mind , here is the question ${message}
 `;
 
-    const response = axios.post("http://localhost:11434/api/generate", {
-      model: "llama 3.2",
+    const response = await axios.post("http://localhost:11434/api/generate", {
+      model: "llama3.2",
       prompt: prompt,
       stream: false,
     });
-    return res.status(200).json({ success: true, response: response.data });
+    return res
+      .status(200)
+      .json({ success: true, reply: response.data.response });
   } catch (err) {
     console.log("Error in sending data to ollama,", err);
     return res.status(500).json({
       success: false,
       message: "LLM chat failed.",
-      error: err?.response?.data || error.message,
+      error: err?.response?.data || err.message,
     });
   }
 };
