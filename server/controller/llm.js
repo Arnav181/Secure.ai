@@ -77,7 +77,7 @@ const chatMessage = async (req, res) => {
     }
 
     const prompt = `
-  You are a cybersecurity assistant. Here's the user's question:
+  You are a cybersecurity assistant.Dont reply any other qyestions of external fields unrelated to cybersecurity or relevant questions. Here's the user's question:
 
   "${message}"
   
