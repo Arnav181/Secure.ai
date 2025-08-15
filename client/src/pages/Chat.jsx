@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { UploadCloud, Send, Loader2, MessageSquarePlus, Bot, User, CornerDownLeft } from "lucide-react";
+import { UploadCloud, Send, Loader2, Bot, User, CornerDownLeft } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
+import Sidebar from '../components/Sidebar';
 
 // This component handles rendering individual chat messages with Markdown and syntax highlighting.
 const ChatMessage = ({ message }) => {
@@ -68,6 +69,10 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+  
+  // New state for sidebar
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]); // Placeholder for future implementation
 
   // Automatically scroll to the latest message
   const scrollToBottom = () => {
@@ -93,6 +98,16 @@ const Chat = () => {
     setMode("upload");
     setMessages([]);
     setInput("");
+  };
+
+  // Sidebar handlers
+  const handleSidebarToggle = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleBackToHome = () => {
+    // Placeholder for navigation - will be implemented when router is available
+    console.log("Navigate to home");
   };
 
   // Handles the initial file analysis
@@ -176,19 +191,22 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center font-sans p-4 relative">
+    <div className="min-h-screen bg-slate-900 text-white font-sans relative">
       
-      {/* New Chat Button */}
-      <button 
-        onClick={handleNewChat}
-        className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700/80 hover:bg-slate-700 transition-colors shadow-md backdrop-blur-sm border border-slate-600"
-        title="Start New Chat"
-      >
-        <MessageSquarePlus className="w-5 h-5 text-blue-400" />
-        <span className="hidden sm:inline">New Chat</span>
-      </button>
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onToggle={handleSidebarToggle}
+        onNewChat={handleNewChat}
+        onBackToHome={handleBackToHome}
+        chatHistory={chatHistory}
+      />
 
-      <div className="w-full max-w-4xl h-[90vh] flex flex-col">
+      {/* Main Content */}
+      <div className={`min-h-screen flex flex-col items-center justify-center p-4 transition-all duration-300 ${
+        sidebarOpen ? 'lg:ml-72' : 'ml-0'
+      }`}>
+        <div className="w-full max-w-4xl h-[90vh] flex flex-col">
         {mode === "upload" && (
             <div className="flex flex-col items-center justify-center h-full">
                 <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
@@ -285,6 +303,7 @@ const Chat = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
