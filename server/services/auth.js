@@ -5,7 +5,7 @@ const secretKey = process.env.SECRET_KEY;
 const setUser = (user) => {
   return jwt.sign(
     {
-      _id: user.id,
+      _id: user._id,
       email: user.email,
     },
     secretKey,
@@ -19,6 +19,7 @@ const getUser = (token) => {
     return payload;
   } catch (err) {
     console.log(err);
+    return null;
   }
 };
 
