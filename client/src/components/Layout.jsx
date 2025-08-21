@@ -6,15 +6,13 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
-  // Don't show MainSidebar on Chat page - it has its own sidebar
-  const showMainSidebar = location.pathname !== "/chat";
+  const showMainSidebar = location.pathname !== "/chat" && location.pathname !== "/landing" && location.pathname !== "/signup" && location.pathname !== "/login";
 
   const handleSidebarToggle = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
   if (!showMainSidebar) {
-    // For Chat page, render without MainSidebar
     return <>{children}</>;
   }
 

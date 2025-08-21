@@ -1,28 +1,55 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useScrollAnimation, useScrollProgress } from "../hooks/useScrollAnimation";
 import {
   ChevronDown,
   Shield,
-  Code,
-  Users,
-  Zap,
-  CheckCircle,
   Menu,
   X,
   ArrowRight,
-  Star,
 } from "lucide-react";
 
 const SecureAiLanding = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const scrollProgress = useScrollProgress();
+  const [heroRef, heroVisible] = useScrollAnimation(0.3);
+  const [servicesRef, servicesVisible] = useScrollAnimation(0.3);
+  const [aboutRef, aboutVisible] = useScrollAnimation(0.3);
+  const [visibleSections, setVisibleSections] = useState(new Set());
+  const sectionsRef = useRef({});
 
+  // Scroll-triggered animations
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
+    const observerOptions = {
+      threshold: [0.1, 0.3, 0.5, 0.7],
+      rootMargin: '-10% 0px -10% 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+          setVisibleSections(prev => new Set([...prev, entry.target.id]));
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    Object.values(sectionsRef.current).forEach(section => {
+      if (section) observer.observe(section);
+    });
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const scrollToSection = (sectionId) => {
@@ -33,8 +60,17 @@ const SecureAiLanding = () => {
     setIsMenuOpen(false);
   };
 
+  const isVisible = (sectionId) => visibleSections.has(sectionId);
+
   return (
     <div className="bg-slate-900 text-white overflow-hidden">
+      {/* Scroll Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-slate-800 z-500">
+        <div 
+          className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
           isScrolled
@@ -75,10 +111,16 @@ const SecureAiLanding = () => {
               >
                 About
               </a>
-              <button className="px-4 py-2 text-slate-300 hover:text-white transition-colors">
+              <button 
+                onClick={() => navigate("/login")}
+                className="px-4 py-2 text-slate-300 hover:text-white transition-colors"
+              >
                 Sign In
               </button>
-              <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg font-semibold transition-all transform hover:scale-105">
+              <button 
+                onClick={() => navigate("/signup")}
+                className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg font-semibold transition-all transform hover:scale-105"
+              >
                 Sign Up
               </button>
             </div>
@@ -123,10 +165,16 @@ const SecureAiLanding = () => {
                 About
               </a>
               <div className="pt-4 pb-3 border-t border-slate-700">
-                <button className="block w-full text-left px-3 py-2 text-slate-300 hover:text-white transition-colors">
+                <button 
+                  onClick={() => navigate("/login")}
+                  className="block w-full text-left px-3 py-2 text-slate-300 hover:text-white transition-colors"
+                >
                   Sign In
                 </button>
-                <button className="block w-full mt-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg font-semibold transition-all">
+                <button 
+                  onClick={() => navigate("/signup")}
+                  className="block w-full mt-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg font-semibold transition-all"
+                >
                   Sign Up
                 </button>
               </div>
@@ -145,8 +193,8 @@ const SecureAiLanding = () => {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(59,130,246,0.05)_50%,transparent_100%)] animate-pulse"></div>
         </div>
 
-        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
-          <div className="animate-fade-in-up">
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto" ref={heroRef}>
+          <div className={`transition-all duration-1000 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
               Secure.ai
               <span className="block text-4xl md:text-6xl mt-2">
@@ -159,11 +207,17 @@ const SecureAiLanding = () => {
               AI-powered security guidance.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl shadow-blue-500/25 flex items-center space-x-2">
+              <button 
+                onClick={() => navigate("/signup")}
+                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl shadow-blue-500/25 flex items-center space-x-2"
+              >
                 <span>Start Free Analysis</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="px-8 py-4 border-2 border-slate-600 hover:border-slate-400 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 backdrop-blur-sm">
+              <button 
+                onClick={() => navigate("/chat")}
+                className="px-8 py-4 border-2 border-slate-600 hover:border-slate-400 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 backdrop-blur-sm"
+              >
                 Try AI Assistant
               </button>
             </div>
@@ -197,9 +251,9 @@ const SecureAiLanding = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 bg-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+      <section id="services" className="min-h-screen flex items-center justify-center bg-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={servicesRef}>
+          <div className={`text-center mb-16 transition-all duration-1000 ${servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               Our Services
             </h2>
@@ -241,7 +295,13 @@ const SecureAiLanding = () => {
             ].map((service, index) => (
               <div
                 key={index}
-                className="group p-6 bg-slate-900/50 backdrop-blur-sm border border-slate-700 rounded-xl hover:border-blue-500/50 transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/10"
+                className={`group p-6 bg-slate-900/50 backdrop-blur-sm border border-slate-700 rounded-xl hover:border-blue-500/50 transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/10 ${
+                  servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ 
+                  transitionDelay: servicesVisible ? `${index * 150}ms` : '0ms',
+                  transitionDuration: '800ms'
+                }}
               >
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-2xl">
                   {service.icon}
@@ -258,9 +318,9 @@ const SecureAiLanding = () => {
         </div>
       </section>
 
-      <section id="about" className="py-20 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+      <section id="about" className="min-h-screen flex items-center justify-center bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={aboutRef}>
+          <div className={`text-center mb-16 transition-all duration-1000 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               About Us
             </h2>
@@ -302,7 +362,12 @@ const SecureAiLanding = () => {
             ].map((item, index) => (
               <div
                 key={index}
-                className="text-center group hover:scale-105 transition-transform"
+                className={`text-center group hover:scale-105 transition-all duration-800 ${
+                  aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ 
+                  transitionDelay: aboutVisible ? `${index * 200}ms` : '0ms'
+                }}
               >
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl group-hover:scale-110 transition-transform">
                   {item.icon}
@@ -319,7 +384,7 @@ const SecureAiLanding = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700">
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-700">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             Ready to Secure Your Projects?
@@ -329,10 +394,16 @@ const SecureAiLanding = () => {
             applications and stay protected from cyber threats.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
+            <button 
+              onClick={() => navigate("/signup")}
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl"
+            >
               Sign Up Now
             </button>
-            <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-all transform hover:scale-105">
+            <button 
+              onClick={() => scrollToSection("about")}
+              className="px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-all transform hover:scale-105"
+            >
               Learn More
             </button>
           </div>
