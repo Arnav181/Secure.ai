@@ -1,0 +1,240 @@
+/* Enhanced Markdown Styling for Cybersecurity Chat */
+
+/* Custom scrollbar for code blocks */
+.markdown-content pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.markdown-content pre::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.markdown-content pre::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.markdown-content pre::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Enhanced table styling */
+.markdown-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #1e293b;
+}
+
+.markdown-content table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.markdown-content table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.markdown-content table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.markdown-content table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+/* Enhanced blockquote styling for different types */
+.markdown-content blockquote {
+  position: relative;
+  margin: 1rem 0;
+  padding: 1rem 1rem 1rem 3rem;
+  border-radius: 0 8px 8px 0;
+}
+
+.markdown-content blockquote::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Warning blockquotes */
+.markdown-content blockquote:has(strong:first-child:contains("⚠️")) {
+  background: rgba(251, 191, 36, 0.1);
+  border-left-color: #f59e0b;
+}
+
+/* Critical blockquotes */
+.markdown-content blockquote:has(strong:first-child:contains("🚨")) {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: #ef4444;
+}
+
+/* Success blockquotes */
+.markdown-content blockquote:has(strong:first-child:contains("✅")) {
+  background: rgba(34, 197, 94, 0.1);
+  border-left-color: #22c55e;
+}
+
+/* Info blockquotes */
+.markdown-content blockquote:has(strong:first-child:contains("🔹")) {
+  background: rgba(59, 130, 246, 0.1);
+  border-left-color: #3b82f6;
+}
+
+/* Enhanced checkbox styling */
+.markdown-content input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #64748b;
+  border-radius: 3px;
+  background: transparent;
+  margin-right: 8px;
+  position: relative;
+  cursor: pointer;
+}
+
+.markdown-content input[type="checkbox"]:checked {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.markdown-content input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Enhanced code inline styling */
+.markdown-content code:not(pre code) {
+  background: rgba(51, 65, 85, 0.8);
+  color: #93c5fd;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-weight: 500;
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+/* Enhanced link styling */
+.markdown-content a {
+  color: #60a5fa;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.markdown-content a:hover {
+  color: #93c5fd;
+  border-bottom-color: #60a5fa;
+}
+
+/* Enhanced horizontal rule */
+.markdown-content hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #475569, transparent);
+  margin: 2rem 0;
+}
+
+/* Emoji enhancement */
+.markdown-content img[alt*="emoji"] {
+  display: inline;
+  width: 1.2em;
+  height: 1.2em;
+  margin: 0 0.1em;
+  vertical-align: -0.1em;
+}
+
+/* Enhanced list item spacing */
+.markdown-content ul li,
+.markdown-content ol li {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+/* Nested list styling */
+.markdown-content ul ul,
+.markdown-content ol ol,
+.markdown-content ul ol,
+.markdown-content ol ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+/* Enhanced definition lists */
+.markdown-content dl {
+  margin: 1rem 0;
+}
+
+.markdown-content dt {
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-top: 1rem;
+}
+
+.markdown-content dd {
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+  color: #cbd5e1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .markdown-content {
+    font-size: 14px;
+  }
+  
+  .markdown-content h1 {
+    font-size: 1.5rem;
+  }
+  
+  .markdown-content h2 {
+    font-size: 1.25rem;
+  }
+  
+  .markdown-content h3 {
+    font-size: 1.125rem;
+  }
+  
+  .markdown-content pre {
+    font-size: 12px;
+  }
+}
+
+/* Animation for streaming text */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.streaming-text {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typewriter 0.1s steps(1) infinite;
+}
+
+/* Pulse animation for loading indicators */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

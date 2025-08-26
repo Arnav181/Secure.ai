@@ -1,65 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { UploadCloud, Send, Loader2, Bot, User, CornerDownLeft } from "lucide-react";
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import remarkGfm from 'remark-gfm';
+import { UploadCloud, Send, Loader2, CornerDownLeft, AlertCircle, Square } from "lucide-react";
 import Sidebar from '../components/Sidebar';
-
-// This component handles rendering individual chat messages with Markdown and syntax highlighting.
-const ChatMessage = ({ message }) => {
-  const isUser = message.sender === 'user';
-
-  // Custom renderer for code blocks to apply syntax highlighting
-  const CodeBlock = {
-    code({ node, inline, className, children, ...props }) {
-      const match = /language-(\w+)/.exec(className || '');
-      return !inline && match ? (
-        <SyntaxHighlighter
-          style={vscDarkPlus}
-          language={match[1]}
-          PreTag="div"
-          {...props}
-        >
-          {String(children).replace(/\n$/, '')}
-        </SyntaxHighlighter>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    },
-  };
-
-  return (
-    <div className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
-      {!isUser && (
-        <div className="w-8 h-8 flex-shrink-0 rounded-full bg-slate-700 flex items-center justify-center">
-          <Bot className="w-5 h-5 text-blue-400" />
-        </div>
-      )}
-      <div
-        className={`rounded-xl px-4 py-3 max-w-[80%] prose prose-invert prose-sm ${
-          isUser
-            ? 'bg-blue-600 text-white'
-            : 'bg-slate-700/80 text-slate-200'
-        }`}
-      >
-        <ReactMarkdown
-            components={CodeBlock}
-            remarkPlugins={[remarkGfm]}
-        >
-            {message.text}
-        </ReactMarkdown>
-      </div>
-       {isUser && (
-        <div className="w-8 h-8 flex-shrink-0 rounded-full bg-slate-700 flex items-center justify-center">
-          <User className="w-5 h-5 text-slate-300" />
-        </div>
-      )}
-    </div>
-  );
-};
+import StreamingChatMessage from '../components/StreamingChatMessage';
+import { 
+  createStreamingMessage, 
+  createUserMessage, 
+  handleStreamingResponse, 
+  formatErrorMessage,
+  scrollToBottom,
+  validateFile,
+  formatFileSize,
+  getPlaceholderText,
+  getMessageComplexity
+} from '../utils/streamingUtils';
 
 
 const Chat = () => {
@@ -68,26 +21,38 @@ const Chat = () => {
   const [mode, setMode] = useState("upload");
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [error, setError] = useState(null);
+  const [abortController, setAbortController] = useState(null);
   const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
   
   // New state for sidebar
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]); // Placeholder for future implementation
 
   // Automatically scroll to the latest message
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const handleScrollToBottom = () => {
+    scrollToBottom(messagesEndRef);
   };
 
   useEffect(() => {
     if (mode === "chat") {
-      scrollToBottom();
+      handleScrollToBottom();
     }
   }, [messages, mode]);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-        setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      const validation = validateFile(selectedFile);
+      
+      if (validation.isValid) {
+        setFile(selectedFile);
+        setError(null);
+      } else {
+        setError(validation.errors.join(', '));
+        setFile(null);
+      }
     }
   };
 
@@ -110,52 +75,120 @@ const Chat = () => {
     console.log("Navigate to home");
   };
 
-  // Handles the initial file analysis
+  // Stop streaming function
+  const handleStopStreaming = () => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+      setLoading(false);
+      
+      // Mark current streaming message as stopped
+      setMessages(prev => prev.map(msg => 
+        msg.isStreaming 
+          ? { ...msg, isStreaming: false, text: msg.text + '\n\n*Response stopped by user*' }
+          : msg
+      ));
+    }
+  };
+
+  // Handles the initial file analysis with streaming
   const handleAnalyze = async () => {
     if (!file) return;
+    
     setLoading(true);
+    setError(null);
+
+    const controller = new AbortController();
+    setAbortController(controller);
 
     const formData = new FormData();
     formData.append("zipfile", file);
+
+    // Add initial streaming message
+    const streamingMessage = createStreamingMessage();
+    setMessages([streamingMessage]);
+    setMode("chat");
 
     try {
       const response = await fetch("http://localhost:8080/chat/codebase", {
         method: "POST",
         body: formData,
+        signal: controller.signal,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-
-      setMessages([
-          { 
-            sender: "llm", 
-            text: data.suggestions || "Here are some suggestions for your codebase."
+      await handleStreamingResponse(
+        response,
+        // onChunk
+        (accumulatedText) => {
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingMessage.id 
+              ? { ...msg, text: accumulatedText }
+              : msg
+          ));
+        },
+        // onComplete
+        (finalText) => {
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingMessage.id 
+              ? { ...msg, isStreaming: false }
+              : msg
+          ));
+          setAbortController(null);
+        },
+        // onError
+        (error) => {
+          if (error.name === 'AbortError') {
+            return; // User cancelled, already handled
           }
-        ]);
-      setMode("chat");
+          const errorMessage = formatErrorMessage(error);
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingMessage.id 
+              ? { 
+                  ...msg, 
+                  text: errorMessage,
+                  isStreaming: false
+                }
+              : msg
+          ));
+          setError(errorMessage);
+          setAbortController(null);
+        }
+      );
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return; // User cancelled, already handled
+      }
       console.error("Error in sending file", err);
+      const errorMessage = formatErrorMessage(err);
       setMessages([
-        { sender: "llm", text: "File analysis failed. Please check the console and try again." },
+        { 
+          ...streamingMessage,
+          text: errorMessage,
+          isStreaming: false
+        },
       ]);
-      setMode("chat");
+      setError(errorMessage);
+      setAbortController(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handles sending a new message in the chat
+  // Handles sending a new message in the chat with streaming
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
-    const userMessage = { sender: "user", text: input.trim() };
-    setMessages((prev) => [...prev, userMessage]);
+    const userMessage = createUserMessage(input);
+    const streamingMessage = createStreamingMessage();
+
+    setMessages((prev) => [...prev, userMessage, streamingMessage]);
+    const currentInput = input.trim();
     setInput("");
     setLoading(true);
+    setError(null);
+
+    const controller = new AbortController();
+    setAbortController(controller);
 
     try {
       const response = await fetch("http://localhost:8080/chat/message", {
@@ -163,28 +196,65 @@ const Chat = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input.trim() }),
+        body: JSON.stringify({ message: currentInput }),
+        signal: controller.signal,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "llm",
-          text: data.reply || "Sorry, I couldn't get a reply.",
+      await handleStreamingResponse(
+        response,
+        // onChunk
+        (accumulatedText) => {
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingMessage.id 
+              ? { ...msg, text: accumulatedText }
+              : msg
+          ));
         },
-      ]);
+        // onComplete
+        (finalText) => {
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingMessage.id 
+              ? { ...msg, isStreaming: false }
+              : msg
+          ));
+          setAbortController(null);
+        },
+        // onError
+        (error) => {
+          if (error.name === 'AbortError') {
+            return; // User cancelled, already handled
+          }
+          const errorMessage = formatErrorMessage(error);
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingMessage.id 
+              ? { 
+                  ...msg, 
+                  text: errorMessage,
+                  isStreaming: false
+                }
+              : msg
+          ));
+          setError(errorMessage);
+          setAbortController(null);
+        }
+      );
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return; // User cancelled, already handled
+      }
       console.error("Chat failed:", err);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "llm", text: "Sorry, I couldn't process your request. Please check the console." },
-      ]);
+      const errorMessage = formatErrorMessage(err);
+      setMessages((prev) => prev.map(msg => 
+        msg.id === streamingMessage.id 
+          ? { 
+              ...msg, 
+              text: errorMessage,
+              isStreaming: false
+            }
+          : msg
+      ));
+      setError(errorMessage);
+      setAbortController(null);
     } finally {
       setLoading(false);
     }
@@ -217,13 +287,29 @@ const Chat = () => {
                 <div className="w-full max-w-2xl bg-slate-800/70 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-slate-700">
                     <label
                         htmlFor="file-upload"
-                        className="flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-xl p-10 cursor-pointer hover:border-blue-500 hover:bg-slate-800 transition-colors"
+                        className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-10 cursor-pointer transition-colors ${
+                          error 
+                            ? 'border-red-500 bg-red-500/5 hover:border-red-400' 
+                            : file 
+                              ? 'border-green-500 bg-green-500/5 hover:border-green-400'
+                              : 'border-slate-600 hover:border-blue-500 hover:bg-slate-800'
+                        }`}
                     >
-                        <UploadCloud className="w-14 h-14 text-blue-400 mb-4" />
-                        <span className="text-slate-300 font-medium text-lg">
-                        {file ? file.name : "Click to upload your .zip file"}
+                        <UploadCloud className={`w-14 h-14 mb-4 ${
+                          error ? 'text-red-400' : file ? 'text-green-400' : 'text-blue-400'
+                        }`} />
+                        <span className="text-slate-300 font-medium text-lg text-center">
+                          {file ? (
+                            <>
+                              {file.name}
+                              <br />
+                              <span className="text-sm text-slate-400">
+                                {formatFileSize(file.size)}
+                              </span>
+                            </>
+                          ) : "Click to upload your .zip file"}
                         </span>
-                        <span className="text-slate-500 text-sm mt-1">Max file size: 50MB</span>
+                        <span className="text-slate-500 text-sm mt-1">Max file size: 150MB</span>
                         <input
                         id="file-upload"
                         type="file"
@@ -232,6 +318,14 @@ const Chat = () => {
                         onChange={handleFileChange}
                         />
                     </label>
+
+                    {/* Error display */}
+                    {error && (
+                      <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2">
+                        <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                        <span className="text-red-300 text-sm">{error}</span>
+                      </div>
+                    )}
 
                     <button
                         onClick={handleAnalyze}
@@ -260,19 +354,75 @@ const Chat = () => {
 
         {mode === "chat" && (
           <div className="w-full h-full flex flex-col bg-slate-800/70 backdrop-blur-sm rounded-2xl p-1 sm:p-4 shadow-2xl border border-slate-700">
-            <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-6">
-              {messages.map((msg, idx) => (
-                <ChatMessage key={idx} message={msg} />
+            {/* Chat Header with Controls */}
+            <div className="flex items-center justify-between p-3 border-b border-slate-700/50">
+              <h2 className="text-lg font-semibold text-slate-200">Cybersecurity Analysis</h2>
+              <div className="flex items-center gap-3">
+                {/* Stop Button */}
+                {loading && (
+                  <button
+                    onClick={handleStopStreaming}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition-all"
+                    title="Stop response generation"
+                  >
+                    <Square className="w-4 h-4" />
+                    <span>Stop</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Error banner */}
+            {error && (
+              <div className="mx-2 mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <span className="text-red-300 text-sm flex-1">{error}</span>
+                <button 
+                  onClick={() => setError(null)}
+                  className="text-red-400 hover:text-red-300 text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+            
+            <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-6">
+              {messages.map((msg) => (
+                <StreamingChatMessage 
+                  key={msg.id || msg.text} 
+                  message={msg} 
+                  isStreaming={msg.isStreaming || false}
+                />
               ))}
               <div ref={messagesEndRef} />
             </div>
 
             <div className="p-2 sm:p-4 border-t border-slate-700">
+              {/* Message complexity indicator */}
+              {input.trim() && (
+                <div className="mb-2 flex items-center gap-2 text-xs text-slate-400">
+                  <span>Message type:</span>
+                  <span className={`px-2 py-1 rounded-full ${
+                    getMessageComplexity(input) === 'casual' 
+                      ? 'bg-green-500/20 text-green-300'
+                      : getMessageComplexity(input) === 'simple'
+                      ? 'bg-blue-500/20 text-blue-300'
+                      : getMessageComplexity(input) === 'medium'
+                      ? 'bg-yellow-500/20 text-yellow-300'
+                      : 'bg-purple-500/20 text-purple-300'
+                  }`}>
+                    {getMessageComplexity(input)}
+                  </span>
+                  <span className="text-slate-500">•</span>
+                  <span>{input.split(' ').length} words</span>
+                </div>
+              )}
+              
               <div className="relative">
                 <input
                   type="text"
                   className="w-full rounded-xl px-4 py-3 pr-20 bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-                  placeholder="Ask a follow-up question..."
+                  placeholder={getPlaceholderText(messages.length > 0, loading)}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
