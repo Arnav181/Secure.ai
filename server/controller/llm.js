@@ -195,7 +195,6 @@ Begin detailed cybersecurity assessment with adaptive formatting based on codeba
               return;
             }
           } catch (parseError) {
-            // Skip invalid JSON lines
             continue;
           }
         }
@@ -527,6 +526,7 @@ ${
               return;
             }
           } catch (parseError) {
+            // Skip invalid JSON lines
             continue;
           }
         }
