@@ -56,7 +56,13 @@ const logoutUser = async (req, res) => {
   return res.status(200).json({ msg: "Cookie cleared successfully" });
 };
 
+const sendUserInfo = async (req, res) => {
+  res.json({ user: req.user });
+};
+
 module.exports = {
   createNewUser,
   loginUser,
+  logoutUser,
+  sendUserInfo,
 };
