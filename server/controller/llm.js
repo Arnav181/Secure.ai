@@ -1,5 +1,22 @@
 const AdmZip = require("adm-zip");
 const axios = require("axios");
+const NodeCache = require("node-cache");
+
+// Initialize cache with 5 minute TTL
+const responseCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
+
+// Rate limiting setup
+const rateLimit = new Map();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 10;
+
+// Connection pool for axios
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:11434',
+  timeout: 30000, // 30 second timeout
+  maxContentLength: Infinity,
+  maxBodyLength: Infinity,
+});
 
 const analyzeZip = async (req, res) => {
   try {
@@ -325,9 +342,11 @@ ${
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
+    let fullResponse = "";
+    
     try {
-      const response = await axios.post(
-        "http://localhost:11434/api/generate",
+      const response = await axiosInstance.post(
+        "/api/generate",
         {
           model: "llama3.2",
           prompt: prompt,
@@ -335,6 +354,7 @@ ${
         },
         {
           responseType: "stream",
+          timeout: 25000, // 25 second timeout
         }
       );
 
@@ -349,8 +369,13 @@ ${
             const data = JSON.parse(line);
             if (data.response) {
               res.write(data.response);
+              fullResponse += data.response;
             }
             if (data.done) {
+              // Cache the response for future use
+              if (fullResponse.length > 20 && !isCasualMessage) {
+                responseCache.set(cacheKey, fullResponse);
+              }
               res.end();
               return;
             }
@@ -371,7 +396,11 @@ ${
       });
     } catch (error) {
       console.error("Chat LLM Error:", error?.response?.data || error.message);
-      res.status(500).end("LLM chat failed");
+      
+      // Fallback response if LLM fails
+      const fallbackResponse = "I apologize, but I'm currently experiencing technical difficulties. Please try again shortly.";
+      res.write(fallbackResponse);
+      res.end();
     }
   } catch (error) {
     console.error("Chat setup error:", error);
@@ -385,11 +414,71 @@ ${
 
 const chatBotMessage = async (req, res) => {
   const { message } = req.body;
+  const clientIP = req.ip || req.connection.remoteAddress;
+  
   try {
     if (!message || typeof message != "string") {
       return res
         .status(400)
         .json({ msg: "Enter a valid message", success: false });
+    }
+
+    // Rate limiting check
+    const now = Date.now();
+    const windowStart = now - RATE_LIMIT_WINDOW;
+    
+    // Clean up old entries
+    if (rateLimit.has(clientIP)) {
+      const requests = rateLimit.get(clientIP).filter(time => time > windowStart);
+      if (requests.length === 0) {
+        rateLimit.delete(clientIP);
+      } else {
+        rateLimit.set(clientIP, requests);
+      }
+    }
+
+    // Check current rate
+    const currentRequests = rateLimit.get(clientIP) || [];
+    if (currentRequests.length >= MAX_REQUESTS_PER_WINDOW) {
+      return res.status(429).json({
+        success: false,
+        message: "Rate limit exceeded. Please try again in a minute."
+      });
+    }
+
+    // Add current request to rate limit
+    rateLimit.set(clientIP, [...currentRequests, now]);
+
+    // Check cache first
+    const cacheKey = `chat_${message.trim().toLowerCase()}`;
+    const cachedResponse = responseCache.get(cacheKey);
+    
+    if (cachedResponse) {
+      console.log("Cache hit for:", message.substring(0, 50) + "...");
+      
+      // Set headers for streaming
+      res.setHeader("Content-Type", "text/plain");
+      res.setHeader("Transfer-Encoding", "chunked");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+      
+      // Stream cached response
+      let index = 0;
+      const chunkSize = 50;
+      
+      const streamResponse = () => {
+        if (index < cachedResponse.length) {
+          const chunk = cachedResponse.substring(index, index + chunkSize);
+          res.write(chunk);
+          index += chunkSize;
+          setTimeout(streamResponse, 10); // Small delay to simulate streaming
+        } else {
+          res.end();
+        }
+      };
+      
+      streamResponse();
+      return;
     }
 
     // Detect casual/greeting messages

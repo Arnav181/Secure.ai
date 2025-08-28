@@ -1,0 +1,38 @@
+/* ChatInterface.css */
+
+/* General styles for Markdown content */
+.markdown {
+  color: #f8f8f8; /* Text color */
+  line-height: 1.5; /* Line height for readability */
+}
+
+/* Headings */
+.markdown h1, .markdown h2, .markdown h3 {
+  color: #ffffff; /* Heading color */
+  margin: 0.5em 0; /* Margin for spacing */
+}
+
+/* Links */
+.markdown a {
+  color: #1e90ff; /* Link color */
+  text-decoration: underline; /* Underline links */
+}
+
+/* Lists */
+.markdown ul, .markdown ol {
+  margin-left: 1.5em; /* Indent lists */
+}
+
+/* Code blocks */
+.markdown pre {
+  background-color: #2e2e2e; /* Background for code blocks */
+  padding: 1em; /* Padding for code blocks */
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* Inline code */
+.markdown code {
+  background-color: #3e3e3e; /* Background for inline code */
+  padding: 0.2em 0.4em; /* Padding for inline code */
+  border-radius: 3px; /* Rounded corners */
+}

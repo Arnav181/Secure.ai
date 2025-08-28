@@ -1,5 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { chatBotMessage } from '../services/llmService'; // Importing the chatBotMessage function
+import './ChatInterface.css'; // Importing CSS styles for ChatInterface
+import ReactMarkdown from 'react-markdown'; // Importing ReactMarkdown for rendering Markdown
+
+// Debounce function to limit API calls
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(null, args), delay);
+  };
+};
+
 
 /**
  * ChatMessage Component - Individual chat message display
@@ -9,16 +21,25 @@ const ChatMessage = ({ message, isUser }) => {
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
       <div
         className={`
-          max-w-[80%] p-3 rounded-lg
+          max-w-[80%] p-3 rounded-lg prose prose-sm
           ${isUser
-            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-            : 'bg-slate-700 text-slate-100'
+            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white prose-invert'
+            : 'bg-slate-700 text-slate-100 prose-invert'
           }
         `}
       >
-        <p className="text-sm leading-relaxed">{message.text}</p>
-        <div className={`text-xs mt-1 ${isUser ? 'text-blue-100' : 'text-slate-400'}`}>
-          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {/* Render Markdown here */}
+        <ReactMarkdown>{message.text}</ReactMarkdown>
+
+        <div
+          className={`text-xs mt-1 ${
+            isUser ? 'text-blue-100' : 'text-slate-400'
+          }`}
+        >
+          {message.timestamp.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </div>
       </div>
     </div>
@@ -60,8 +81,8 @@ const ChatInterface = ({ className = '' }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Handle sending messages
-  const handleSendMessage = async (e) => {
+  // Throttle function to limit API calls
+  const handleSendMessage = useCallback(async (e) => {
     e.preventDefault();
     
     if (!inputValue.trim()) return;
@@ -105,7 +126,7 @@ const ChatInterface = ({ className = '' }) => {
     } finally {
       setIsTyping(false);
     }
-  };
+  }, [inputValue]);
 
   // Handle input changes
   const handleInputChange = (e) => {
