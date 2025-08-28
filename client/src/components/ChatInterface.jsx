@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { chatBotMessage } from '../services/llmService'; // Importing the chatBotMessage function
 
 /**
  * ChatMessage Component - Individual chat message display
@@ -77,30 +78,33 @@ const ChatInterface = ({ className = '' }) => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response (placeholder for future backend integration)
-    setTimeout(() => {
+    try {
+      // Send message to LLM backend
+      const response = await chatBotMessage({ message: userMessage.text });
+      
       const botResponse = {
         id: (Date.now() + 1).toString(),
-        text: generatePlaceholderResponse(userMessage.text),
+        text: response,
         isUser: false,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Error sending message to LLM:', error);
+      
+      // Fallback response if LLM fails
+      const errorResponse = {
+        id: (Date.now() + 1).toString(),
+        text: "I apologize, but I'm currently unable to process your request. Please try again later or check if the LLM server is running.",
+        isUser: false,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
-  };
-
-  // Placeholder response generator (to be replaced with actual AI integration)
-  const generatePlaceholderResponse = (userInput) => {
-    const responses = [
-      "I understand you're asking about cybersecurity laws. This is a placeholder response - I'll be connected to an AI backend soon to provide detailed legal assistance.",
-      "That's an interesting question about Indian cybersecurity legislation. Once integrated with the AI backend, I'll be able to provide comprehensive answers about specific acts and sections.",
-      "I can see you're looking for legal guidance. The AI integration is coming soon, and I'll be able to help you understand complex legal provisions in detail.",
-      "Thank you for your question about cybersecurity laws. I'm currently in development mode, but soon I'll provide expert-level assistance on Indian cyber legislation."
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
+    }
   };
 
   // Handle input changes
