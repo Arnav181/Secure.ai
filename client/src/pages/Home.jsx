@@ -774,6 +774,8 @@ const Footer = () => {
 const Home = () => {
   const scrollProgress = useScrollProgress();
   
+  console.log("Home component: Rendering");
+  
   // Monitor performance
   usePerformanceMonitoring();
   

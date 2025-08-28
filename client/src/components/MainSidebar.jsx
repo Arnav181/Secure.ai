@@ -12,7 +12,10 @@ import {
     Home
 } from "lucide-react";
 
+import { useAuth } from '../context/AuthContext'; // Import the authentication context
+
 const MainSidebar = ({ isOpen, onToggle }) => {
+    const { logout } = useAuth(); // Get the logout function from context
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -64,10 +67,8 @@ const MainSidebar = ({ isOpen, onToggle }) => {
     };
 
     const handleLogout = () => {
-        // TODO: Implement actual logout logic
-        console.log("Logout functionality to be implemented");
-        // For now, navigate to home
-        navigate("/");
+        logout(); // Call the logout function
+        navigate("/login"); // Redirect to login page
     };
 
     const isActivePath = (path) => {
