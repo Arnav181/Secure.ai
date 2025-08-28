@@ -18,14 +18,14 @@ const googleAuthSuccess = async (req, res) => {
   try {
     // Generate JWT token
     const token = setUser(req.user);
-    
+
     // Set token as cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 3600000, // 1 hour
     });
-    
+
     // Redirect to frontend with token
     res.redirect(`${process.env.CLIENT_URL}/login?token=${token}`);
   } catch (error) {
