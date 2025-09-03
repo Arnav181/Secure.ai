@@ -8,10 +8,14 @@ const checkForAuth = (req, res, next) => {
   }
   try {
     const user = getUser(token);
+    if (!user) {
+      return res.status(401).json({ msg: "Invalid token" });
+    }
     req.user = user;
     next();
   } catch (err) {
     console.log("Error in validating user", err);
+    return res.status(401).json({ msg: "Invalid token" });
   }
 };
 

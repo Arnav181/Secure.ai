@@ -10,6 +10,7 @@ export default function LoginModule() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   // Check for successful Google login
   useEffect(() => {
@@ -26,7 +27,9 @@ export default function LoginModule() {
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     console.log("LoginModule: Attempting login with email:", email);
+    
     try {
       const response = await axios.post(
         "http://localhost:8080/user/login",
@@ -34,16 +37,22 @@ export default function LoginModule() {
         { withCredentials: true }
       );
       console.log("LoginModule: Login response received:", response);
-      if (response.status === 201) {
+      
+      if (response.status === 201 && response.data.token) {
         console.log("Login Successful");
         console.log("LoginModule: Token received:", response.data.token);
         login(response.data.token); // Call the login function from AuthContext
         navigate("/");
       } else {
-        console.log("Login Failed");
+        setError("Login failed. Please try again.");
       }
     } catch (err) {
       console.log("Error In Login", err);
+      if (err.response?.data?.msg) {
+        setError(err.response.data.msg);
+      } else {
+        setError("Login failed. Please check your credentials.");
+      }
     }
   };
 
@@ -153,6 +162,12 @@ export default function LoginModule() {
                   Forgot your password?
                 </a>
               </div>
+
+              {error && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                  <p className="text-red-400 text-sm">{error}</p>
+                </div>
+              )}
 
               {/* Login Button */}
               <button

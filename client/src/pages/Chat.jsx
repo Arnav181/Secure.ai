@@ -73,6 +73,7 @@ const Chat = () => {
   const handleBackToHome = () => {
     // Placeholder for navigation - will be implemented when router is available
     console.log("Navigate to home");
+    
   };
 
   // Stop streaming function

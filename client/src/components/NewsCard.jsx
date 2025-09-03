@@ -40,13 +40,13 @@ const NewsCard = ({ article, searchQuery = '', onArticleClick, className = '' })
     }
 
     const segments = highlightText(text, query.split(' ').filter(term => term.trim()));
-    
+
     return (
       <span>
         {segments.map((segment, index) => (
           segment.highlighted ? (
-            <mark 
-              key={index} 
+            <mark
+              key={index}
               className="bg-yellow-400/20 text-yellow-300 px-1 rounded border border-yellow-400/30"
             >
               {segment.text}
@@ -60,7 +60,7 @@ const NewsCard = ({ article, searchQuery = '', onArticleClick, className = '' })
   };
 
   return (
-    <article 
+    <article
       className={`bg-slate-800/70 backdrop-blur-sm rounded-xl shadow-lg border border-slate-700 overflow-hidden hover:shadow-xl hover:bg-slate-800/80 transition-all duration-300 cursor-pointer group ${className}`}
       onClick={handleClick}
       role="button"
@@ -85,23 +85,23 @@ const NewsCard = ({ article, searchQuery = '', onArticleClick, className = '' })
             loading="lazy"
           />
         ) : null}
-        
+
         {/* Default placeholder when no image or image fails to load */}
         <div className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800 ${urlToImage ? 'opacity-0' : 'opacity-100'}`}>
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-3 bg-slate-600/50 rounded-lg flex items-center justify-center">
-              <svg 
-                className="w-8 h-8 text-slate-400" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-8 h-8 text-slate-400"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
                 aria-hidden="true"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
                 />
               </svg>
             </div>
@@ -136,39 +136,39 @@ const NewsCard = ({ article, searchQuery = '', onArticleClick, className = '' })
         {/* Footer with date and read more indicator */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-700">
           <div className="flex items-center text-xs text-slate-400">
-            <svg 
-              className="w-4 h-4 mr-1.5" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-4 h-4 mr-1.5"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
             <time dateTime={publishedAt}>
               {formatRelativeTime(publishedAt)}
             </time>
           </div>
-          
+
           <div className="flex items-center text-xs text-blue-400 group-hover:text-blue-300 transition-colors duration-200">
             <span className="mr-1">Read more</span>
-            <svg 
-              className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
               />
             </svg>
           </div>

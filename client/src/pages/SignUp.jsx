@@ -2,32 +2,45 @@ import { useState } from "react";
 import { Shield, Mail, Lock, UserPlus, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function SignupModule() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleOnSubmit = (e) => {
+  const handleOnSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    
     try {
-      axios
-        .post("http://localhost:8080/user/signup", {
+      const response = await axios.post(
+        "http://localhost:8080/user/signup",
+        {
           username: name,
           email,
           password,
-        })
-        .then((response) => {
-          if (response.status === 201) {
-            console.log("Form Submitted Successfully");
-            navigate("/");
-          } else {
-            console.log("Signup failed");
-          }
-        });
+        },
+        { withCredentials: true }
+      );
+      
+      if (response.status === 201 && response.data.token) {
+        console.log("Signup successful");
+        login(response.data.token);
+        navigate("/");
+      } else {
+        setError("Signup failed. Please try again.");
+      }
     } catch (err) {
-      console.log(`Error in sign up : ${err}`);
+      console.log("Error in signup:", err);
+      if (err.response?.data?.msg) {
+        setError(err.response.data.msg);
+      } else {
+        setError("Signup failed. Please try again.");
+      }
     }
   };
 
@@ -134,6 +147,12 @@ export default function SignupModule() {
                   />
                 </div>
               </div>
+
+              {error && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                  <p className="text-red-400 text-sm">{error}</p>
+                </div>
+              )}
 
               <button
                 type="submit"

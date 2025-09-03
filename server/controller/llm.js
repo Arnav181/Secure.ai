@@ -354,7 +354,7 @@ ${
         },
         {
           responseType: "stream",
-          timeout: 25000, // 25 second timeout
+        
         }
       );
 

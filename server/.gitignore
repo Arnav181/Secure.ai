@@ -1,2 +1,4 @@
 .env
+.kiro
+.vscode/*
 node_modules

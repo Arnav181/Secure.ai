@@ -20,9 +20,22 @@ const createNewUser = async (req, res) => {
       email,
       password: hashedPassword,
     });
+    
+    // Generate token for immediate login
+    const token = setUser(userdetails);
+    res.cookie("token", token);
+    
     res
       .status(201)
-      .json({ msg: "User created successfully", createdUser: userdetails });
+      .json({ 
+        msg: "User created successfully", 
+        token,
+        user: {
+          id: userdetails._id,
+          username: userdetails.username,
+          email: userdetails.email
+        }
+      });
   } catch (err) {
     console.log("Error in creating new user", err);
     res
@@ -44,7 +57,7 @@ const loginUser = async (req, res) => {
     }
     const token = setUser(existingUser);
     res.cookie("token", token);
-    return res.status(201).json({ msg: "Successfully logged in" });
+    return res.status(201).json({ msg: "Successfully logged in", token });
   } catch (err) {
     console.log("Error in logging in user", err);
     return res.status(500).json({ msg: "Internal server error" });
